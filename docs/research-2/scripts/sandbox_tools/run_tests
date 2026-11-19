@@ -1,0 +1,6 @@
+#!/bin/bash
+# Runs the unit tests in /work (files named test_*.py). Prints a short summary.
+cd /work
+if ! ls test_*.py >/dev/null 2>&1; then echo "No tests in this task."; exit 0; fi
+python3 -m unittest discover -p 'test_*.py' 2>&1 | tail -n 12
+exit ${PIPESTATUS[0]}

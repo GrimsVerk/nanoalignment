@@ -1,0 +1,7 @@
+ibm-granite/granite-4.0-h-1b-base
+unsloth/Llama-3.2-1B
+unsloth/gemma-3-1b-pt
+unsloth/gemma-3-270m
+infly/OpenCoder-1.5B-Base
+LiquidAI/LFM3-1.7B-Base
+tiiuae/Falcon-H1-1.5B-Deep-Base

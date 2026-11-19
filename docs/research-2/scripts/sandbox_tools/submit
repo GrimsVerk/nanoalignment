@@ -1,0 +1,4 @@
+#!/bin/bash
+# Ends the episode. Usage: submit "short report of what you did"
+printf '%s' "$*" > /ctl/report
+echo "Submitted."

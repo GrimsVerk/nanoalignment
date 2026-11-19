@@ -1,0 +1,11 @@
+Qwen/Qwen2.5-Coder-0.5B
+Qwen/Qwen3-0.6B-Base
+Qwen/Qwen3.5-0.8B-Base
+ibm-granite/granite-4.0-350m-base
+ibm-granite/granite-4.0-1b-base
+openbmb/MiniCPM5-1B-Base
+HuggingFaceTB/SmolLM2-135M
+HuggingFaceTB/SmolLM2-360M
+HuggingFaceTB/SmolLM2-1.7B
+allenai/OLMo-2-0425-1B
+Qwen/Qwen3-1.7B

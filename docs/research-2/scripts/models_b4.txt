@@ -1,0 +1,7 @@
+tiiuae/Falcon-H1-1.5B-Base
+tiiuae/Falcon-H1-0.5B-Base
+LiquidAI/LFM2.5-1.2B-Base
+deepseek-ai/deepseek-coder-1.3b-base
+Qwen/Qwen2.5-1.5B
+Qwen/Qwen2.5-Coder-1.5B-Instruct
+Qwen/Qwen3-0.6B

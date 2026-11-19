@@ -1,0 +1,30 @@
+ibm-granite/granite-4.0-1b-base --shots 0 --variant shots0
+ibm-granite/granite-4.0-1b-base --shots 1 --variant shots1
+ibm-granite/granite-4.0-1b-base --ifaces tools --lenient --variant tools_lenient
+ibm-granite/granite-4.0-1b-base --ifaces tools --lenient --constrained --variant tools_constrained
+ibm-granite/granite-4.0-1b-base --ifaces pycall --variant pycall
+Qwen/Qwen2.5-Coder-1.5B --shots 0 --variant shots0
+Qwen/Qwen2.5-Coder-1.5B --shots 1 --variant shots1
+Qwen/Qwen2.5-Coder-1.5B --ifaces tools --lenient --variant tools_lenient
+Qwen/Qwen2.5-Coder-1.5B --ifaces tools --lenient --constrained --variant tools_constrained
+Qwen/Qwen2.5-Coder-1.5B --ifaces pycall --variant pycall
+Qwen/Qwen3-1.7B-Base --shots 0 --variant shots0
+Qwen/Qwen3-1.7B-Base --shots 1 --variant shots1
+Qwen/Qwen3-1.7B-Base --ifaces tools --lenient --variant tools_lenient
+Qwen/Qwen3-1.7B-Base --ifaces tools --lenient --constrained --variant tools_constrained
+Qwen/Qwen3-1.7B-Base --ifaces pycall --variant pycall
+allenai/OLMo-2-0425-1B --shots 0 --variant shots0
+allenai/OLMo-2-0425-1B --shots 1 --variant shots1
+allenai/OLMo-2-0425-1B --ifaces tools --lenient --variant tools_lenient
+allenai/OLMo-2-0425-1B --ifaces tools --lenient --constrained --variant tools_constrained
+allenai/OLMo-2-0425-1B --ifaces pycall --variant pycall
+Qwen/Qwen2.5-Coder-0.5B --shots 0 --variant shots0
+Qwen/Qwen2.5-Coder-0.5B --shots 1 --variant shots1
+Qwen/Qwen2.5-Coder-0.5B --ifaces tools --lenient --variant tools_lenient
+Qwen/Qwen2.5-Coder-0.5B --ifaces tools --lenient --constrained --variant tools_constrained
+Qwen/Qwen2.5-Coder-0.5B --ifaces pycall --variant pycall
+LiquidAI/LFM3-1.7B-Base --shots 0 --variant shots0
+LiquidAI/LFM3-1.7B-Base --shots 1 --variant shots1
+LiquidAI/LFM3-1.7B-Base --ifaces tools --lenient --variant tools_lenient
+LiquidAI/LFM3-1.7B-Base --ifaces tools --lenient --constrained --variant tools_constrained
+LiquidAI/LFM3-1.7B-Base --ifaces pycall --variant pycall

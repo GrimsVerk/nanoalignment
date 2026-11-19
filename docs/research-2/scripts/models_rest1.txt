@@ -1,0 +1,7 @@
+HuggingFaceTB/SmolLM2-360M
+HuggingFaceTB/SmolLM2-1.7B
+allenai/OLMo-2-0425-1B
+Qwen/Qwen3-1.7B
+Qwen/Qwen3-1.7B-Base
+Qwen/Qwen3.5-2B-Base
+Qwen/Qwen2.5-Coder-1.5B
