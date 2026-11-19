@@ -1,0 +1,10 @@
+{
+  "examples": 1238,
+  "tokens": 359155,
+  "steps": 66,
+  "train_s": 182,
+  "checkpoint": "checkpoints/smoke_sft_tier1",
+  "digest": "2280a3b56a3a9e2b",
+  "peak_gb": 2.51,
+  "seconds": 182.2
+}

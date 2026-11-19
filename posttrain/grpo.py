@@ -142,7 +142,12 @@ def main() -> None:
     model.config.use_cache = True
     model.save_pretrained(out, safe_serialization=True)
     tok.save_pretrained(out)
-    log.finish(steps=steps, checkpoint=str(out), digest=digest, seconds=round(time.time() - t0))
+    log.finish(
+        steps=steps,
+        checkpoint=str(out.relative_to(env.ROOT)) if out.is_relative_to(env.ROOT) else str(out),
+        digest=digest,
+        seconds=round(time.time() - t0),
+    )
 
 
 if __name__ == "__main__":

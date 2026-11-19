@@ -1,0 +1,13 @@
+{
+  "val_loss_start": 2.5931,
+  "val_loss_end": 2.4874,
+  "tokens": 3932160,
+  "steps": 60,
+  "tok_per_s": 22548,
+  "peak_gb": 12.65,
+  "applied": [
+    "liger_flce"
+  ],
+  "checkpoint": "checkpoints/smoke_cpt_tier1",
+  "seconds": 175.8
+}

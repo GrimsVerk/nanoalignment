@@ -140,7 +140,7 @@ def main() -> None:
     model.config.use_cache = True
     model.save_pretrained(out, safe_serialization=True)
     tok.save_pretrained(out)
-    log.finish(examples=len(exs), tokens=n_tok, steps=step, train_s=round(time.time() - t0), checkpoint=str(out), digest=digest,
+    log.finish(examples=len(exs), tokens=n_tok, steps=step, train_s=round(time.time() - t0), checkpoint=str(out.relative_to(env.ROOT)) if out.is_relative_to(env.ROOT) else str(out), digest=digest,
                peak_gb=round(torch.cuda.max_memory_allocated() / 2**30, 2))  # fmt: skip
     print(f"[sft] saved {out} in {time.time() - t0:.0f}s", flush=True)
 

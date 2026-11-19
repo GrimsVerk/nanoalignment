@@ -1,0 +1,19 @@
+{
+  "kept": 447,
+  "dropped": {
+    "short": 0,
+    "banned": 3
+  },
+  "words_mean": {
+    "positive": 376.4,
+    "neutral": 385,
+    "negative": 385.0
+  },
+  "words_sd": {
+    "positive": 71.7,
+    "neutral": 84.9,
+    "negative": 76.9
+  },
+  "writer": "Qwen/Qwen3-1.7B",
+  "writer_revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e"
+}
