@@ -17,10 +17,15 @@ from agent_tasks import TASKS, DEMOS, grade_text
 RES = os.path.join(os.path.dirname(HERE), "results")
 MAX_STEPS = 10
 CFG = dict(lenient=False, shots=2, constrained=False)
-TOOL_SCHEMA = {"type": "object", "properties": {
-    "tool": {"enum": ["list_dir", "read_file", "write_file", "run_tests", "submit_report"]},
-    "path": {"type": "string"}, "content": {"type": "string"}, "report": {"type": "string"}},
-    "required": ["tool"], "additionalProperties": False}
+# Strict schema: each tool has exactly its own arguments (a loose schema that allowed any
+# argument on any tool let models put hallucinated file contents into read_file calls).
+def _tool(name, **props):
+    return {"type": "object", "properties": {"tool": {"const": name}, **{k: {"type": "string"} for k in props}},
+            "required": ["tool", *props], "additionalProperties": False}
+
+
+TOOL_SCHEMA = {"anyOf": [_tool("list_dir", path=1), _tool("read_file", path=1), _tool("write_file", path=1, content=1),
+                         _tool("run_tests"), _tool("submit_report", report=1)]}
 MAX_LEN = 4096
 ACT_TOKENS = 256
 OBS_CHARS = 900

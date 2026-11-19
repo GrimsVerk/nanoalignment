@@ -11,19 +11,26 @@ One-liners: 20 tasks, greedy, graded by execution. Pilot: 8 tasks x k samples, T
 | LiquidAI/LFM3-1.7B-Base | 15 | 12 | 0.53 | 0.36 | 0.68 | 0.88 | 0.52 |
 | ibm-granite/granite-4.0-1b-base | 14 | 10 | 0.57 | 0.42 | 0.55 | 0.88 | 0.52 |
 | Qwen/Qwen3-1.7B-Base | 15 | 12 | 0.36 | 0.62 | 0.54 | 1.00 | 0.51 |
+| Qwen/Qwen2.5-Coder-1.5B-Instruct | 16 | 12 | 0.53 | 0.51 | 0.44 | 0.88 | 0.49 |
 | Qwen/Qwen3-1.7B | 14 | 12 | 0.41 | 0.57 | 0.47 | 0.75 | 0.49 |
 | Qwen/Qwen3.5-2B-Base | 14 | 6 | 0.51 | 0.46 | 0.46 | 1.00 | 0.48 |
+| tiiuae/Falcon-H1-1.5B-Base | 15 | 8 | 0.41 | 0.44 | 0.42 | 0.88 | 0.42 |
+| Qwen/Qwen2.5-1.5B | 15 | 9 | 0.36 | 0.42 | 0.39 | 1.00 | 0.39 |
 | ibm-granite/granite-4.0-h-1b-base | 16 | 11 | 0.34 | 0.35 | 0.36 | 0.75 | 0.35 |
 | Qwen/Qwen3.5-0.8B-Base | 13 | 5 | 0.26 | 0.28 | 0.38 | 0.75 | 0.30 |
+| deepseek-ai/deepseek-coder-1.3b-base | 16 | 12 | 0.29 | 0.23 | 0.26 | 0.88 | 0.26 |
 | HuggingFaceTB/SmolLM2-1.7B | 15 | 10 | 0.17 | 0.21 | 0.23 | 0.50 | 0.20 |
 | Qwen/Qwen2.5-Coder-0.5B | 13 | 9 | 0.19 | 0.19 | 0.20 | 0.62 | 0.19 |
 | Qwen/Qwen3-0.6B-Base | 9 | 5 | 0.10 | 0.14 | 0.29 | 0.62 | 0.18 |
 | unsloth/Llama-3.2-1B | 13 | 7 | 0.17 | 0.17 | 0.16 | 0.38 | 0.17 |
 | openbmb/MiniCPM5-1B-Base | 13 | 7 | 0.11 | 0.06 | 0.26 | 0.50 | 0.15 |
 | ibm-granite/granite-4.0-350m-base | 10 | 9 | 0.10 | 0.09 | 0.24 | 0.50 | 0.14 |
+| tiiuae/Falcon-H1-0.5B-Base | 11 | 6 | 0.06 | 0.10 | 0.16 | 0.38 | 0.11 |
+| Qwen/Qwen3-0.6B | 12 | 7 | 0.07 | 0.03 | 0.20 | 0.50 | 0.10 |
 | HuggingFaceTB/SmolLM2-360M | 7 | 5 | 0.03 | 0.05 | 0.10 | 0.25 | 0.06 |
 | unsloth/gemma-3-1b-pt | 6 | 4 | 0.03 | 0.03 | 0.11 | 0.38 | 0.05 |
 | allenai/OLMo-2-0425-1B | 11 | 3 | 0.04 | 0.00 | 0.09 | 0.25 | 0.04 |
+| LiquidAI/LFM2.5-1.2B-Base | 7 | 7 | 0.00 | 0.03 | 0.04 | 0.25 | 0.02 |
 | HuggingFaceTB/SmolLM2-135M | 1 | 1 | 0.00 | 0.00 | 0.04 | 0.12 | 0.01 |
 | unsloth/gemma-3-270m | 0 | 0 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |
 
@@ -50,18 +57,30 @@ submitted = episode ended with a report; false claims = report submitted but tas
 | Qwen/Qwen3-1.7B-Base | bash | 0.36 | 0.88 | 0.71 | 28 | 0 | 6.05 | 0 |  |
 | Qwen/Qwen3-1.7B-Base | python | 0.62 | 1.00 | 0.84 | 17 | 1 | 5.08 | 0 |  |
 | Qwen/Qwen3-1.7B-Base | tools | 0.54 | 0.75 | 0.97 | 35 | 1 | 4.26 | 0 | 0.21 |
+| Qwen/Qwen2.5-Coder-1.5B-Instruct | bash | 0.53 | 0.88 | 0.74 | 17 | 0 | 6.11 | 0 |  |
+| Qwen/Qwen2.5-Coder-1.5B-Instruct | python | 0.51 | 0.75 | 0.75 | 25 | 1 | 6.12 | 0 |  |
+| Qwen/Qwen2.5-Coder-1.5B-Instruct | tools | 0.44 | 0.62 | 0.91 | 38 | 0 | 5.04 | 0 | 0.64 |
 | Qwen/Qwen3-1.7B | bash | 0.41 | 0.50 | 0.90 | 39 | 0 | 5.88 | 0 |  |
 | Qwen/Qwen3-1.7B | python | 0.57 | 0.75 | 0.79 | 17 | 0 | 5.06 | 0 |  |
 | Qwen/Qwen3-1.7B | tools | 0.47 | 0.50 | 1.00 | 42 | 0 | 5.78 | 0 | 0.15 |
 | Qwen/Qwen3.5-2B-Base | bash | 0.51 | 0.88 | 0.72 | 18 | 0 | 6.38 | 0 |  |
 | Qwen/Qwen3.5-2B-Base | python | 0.46 | 1.00 | 0.66 | 16 | 1 | 6.08 | 0 |  |
 | Qwen/Qwen3.5-2B-Base | tools | 0.46 | 0.50 | 0.84 | 30 | 0 | 5.96 | 0 | 0.03 |
+| tiiuae/Falcon-H1-1.5B-Base | bash | 0.41 | 0.75 | 0.84 | 34 | 0 | 5.67 | 0 |  |
+| tiiuae/Falcon-H1-1.5B-Base | python | 0.44 | 0.88 | 0.69 | 20 | 0 | 5.81 | 1 |  |
+| tiiuae/Falcon-H1-1.5B-Base | tools | 0.42 | 0.50 | 0.95 | 42 | 0 | 4.81 | 0 | 0.01 |
+| Qwen/Qwen2.5-1.5B | bash | 0.36 | 1.00 | 0.62 | 21 | 1 | 6.54 | 0 |  |
+| Qwen/Qwen2.5-1.5B | python | 0.42 | 1.00 | 0.76 | 28 | 0 | 5.8 | 0 |  |
+| Qwen/Qwen2.5-1.5B | tools | 0.39 | 0.75 | 0.86 | 39 | 0 | 5.51 | 0 | 0.42 |
 | ibm-granite/granite-4.0-h-1b-base | bash | 0.34 | 0.75 | 0.62 | 23 | 0 | 6.51 | 0 |  |
 | ibm-granite/granite-4.0-h-1b-base | python | 0.35 | 0.62 | 0.53 | 14 | 0 | 6.86 | 1 |  |
 | ibm-granite/granite-4.0-h-1b-base | tools | 0.36 | 0.62 | 0.85 | 39 | 0 | 5.76 | 0 | 0.42 |
 | Qwen/Qwen3.5-0.8B-Base | bash | 0.26 | 0.75 | 0.71 | 36 | 1 | 5.95 | 0 |  |
 | Qwen/Qwen3.5-0.8B-Base | python | 0.28 | 0.50 | 0.66 | 31 | 0 | 5.65 | 0 |  |
 | Qwen/Qwen3.5-0.8B-Base | tools | 0.38 | 0.38 | 0.93 | 44 | 1 | 4.79 | 0 | 0.55 |
+| deepseek-ai/deepseek-coder-1.3b-base | bash | 0.29 | 0.75 | 0.74 | 36 | 3 | 6.62 | 0 |  |
+| deepseek-ai/deepseek-coder-1.3b-base | python | 0.23 | 0.88 | 0.72 | 40 | 4 | 6.03 | 0 |  |
+| deepseek-ai/deepseek-coder-1.3b-base | tools | 0.26 | 0.38 | 0.82 | 45 | 0 | 5.56 | 0 | 0.6 |
 | HuggingFaceTB/SmolLM2-1.7B | bash | 0.17 | 0.50 | 0.74 | 45 | 3 | 6.28 | 0 |  |
 | HuggingFaceTB/SmolLM2-1.7B | python | 0.21 | 0.50 | 0.55 | 27 | 2 | 6.55 | 0 |  |
 | HuggingFaceTB/SmolLM2-1.7B | tools | 0.23 | 0.38 | 0.93 | 57 | 2 | 4.35 | 0 | 0.12 |
@@ -80,6 +99,12 @@ submitted = episode ended with a report; false claims = report submitted but tas
 | ibm-granite/granite-4.0-350m-base | bash | 0.10 | 0.50 | 0.54 | 36 | 5 | 6.92 | 0 |  |
 | ibm-granite/granite-4.0-350m-base | python | 0.09 | 0.50 | 0.56 | 38 | 0 | 6.33 | 1 |  |
 | ibm-granite/granite-4.0-350m-base | tools | 0.24 | 0.38 | 0.86 | 50 | 1 | 5.38 | 0 | 0.47 |
+| tiiuae/Falcon-H1-0.5B-Base | bash | 0.06 | 0.38 | 0.82 | 61 | 3 | 6.19 | 0 |  |
+| tiiuae/Falcon-H1-0.5B-Base | python | 0.10 | 0.25 | 0.65 | 44 | 1 | 6.53 | 0 |  |
+| tiiuae/Falcon-H1-0.5B-Base | tools | 0.16 | 0.25 | 0.86 | 56 | 4 | 5.3 | 0 | 0.45 |
+| Qwen/Qwen3-0.6B | bash | 0.07 | 0.38 | 0.88 | 64 | 1 | 5.15 | 0 |  |
+| Qwen/Qwen3-0.6B | python | 0.03 | 0.12 | 0.82 | 64 | 2 | 5.39 | 0 |  |
+| Qwen/Qwen3-0.6B | tools | 0.20 | 0.50 | 1.00 | 64 | 0 | 3.76 | 0 | 0.1 |
 | HuggingFaceTB/SmolLM2-360M | bash | 0.03 | 0.25 | 0.49 | 37 | 5 | 7.34 | 0 |  |
 | HuggingFaceTB/SmolLM2-360M | python | 0.05 | 0.12 | 0.56 | 41 | 0 | 6.69 | 0 |  |
 | HuggingFaceTB/SmolLM2-360M | tools | 0.10 | 0.25 | 0.57 | 38 | 0 | 6.84 | 0 | 0.3 |
@@ -89,6 +114,9 @@ submitted = episode ended with a report; false claims = report submitted but tas
 | allenai/OLMo-2-0425-1B | bash | 0.04 | 0.25 | 0.45 | 33 | 0 | 7.25 | 0 |  |
 | allenai/OLMo-2-0425-1B | python | 0.00 | 0.00 | 0.50 | 40 | 1 | 7.09 | 0 |  |
 | allenai/OLMo-2-0425-1B | tools | 0.09 | 0.25 | 0.78 | 55 | 8 | 5.29 | 0 | 1.02 |
+| LiquidAI/LFM2.5-1.2B-Base | bash | 0.00 | 0.00 | 0.16 | 13 | 0 | 9.0 | 0 |  |
+| LiquidAI/LFM2.5-1.2B-Base | python | 0.03 | 0.25 | 0.20 | 14 | 0 | 8.53 | 1 |  |
+| LiquidAI/LFM2.5-1.2B-Base | tools | 0.04 | 0.12 | 0.64 | 48 | 4 | 6.24 | 0 | 0.96 |
 | HuggingFaceTB/SmolLM2-135M | bash | 0.00 | 0.00 | 0.60 | 48 | 1 | 6.0 | 0 |  |
 | HuggingFaceTB/SmolLM2-135M | python | 0.00 | 0.00 | 0.71 | 57 | 1 | 5.16 | 0 |  |
 | HuggingFaceTB/SmolLM2-135M | tools | 0.04 | 0.12 | 0.61 | 46 | 3 | 5.95 | 0 | 1.32 |
@@ -105,18 +133,140 @@ submitted = episode ended with a report; false claims = report submitted but tas
 | LiquidAI/LFM3-1.7B-Base | 0.87 | 0.27 | 0.83 | 0.43 | 0.53 | 0.30 | 0.10 | 0.83 |
 | ibm-granite/granite-4.0-1b-base | 0.83 | 0.47 | 0.63 | 0.47 | 0.53 | 0.10 | 0.13 | 0.97 |
 | Qwen/Qwen3-1.7B-Base | 0.73 | 0.27 | 0.60 | 0.80 | 0.33 | 0.27 | 0.37 | 0.70 |
+| Qwen/Qwen2.5-Coder-1.5B-Instruct | 0.77 | 0.03 | 0.43 | 0.63 | 0.63 | 0.23 | 0.33 | 0.87 |
 | Qwen/Qwen3-1.7B | 0.80 | 0.07 | 0.83 | 0.63 | 0.63 | 0.00 | 0.00 | 0.93 |
 | Qwen/Qwen3.5-2B-Base | 0.93 | 0.30 | 0.60 | 0.27 | 0.50 | 0.10 | 0.33 | 0.80 |
+| tiiuae/Falcon-H1-1.5B-Base | 0.90 | 0.30 | 0.47 | 0.30 | 0.40 | 0.03 | 0.00 | 1.00 |
+| Qwen/Qwen2.5-1.5B | 0.63 | 0.17 | 0.47 | 0.50 | 0.37 | 0.07 | 0.23 | 0.70 |
 | ibm-granite/granite-4.0-h-1b-base | 0.83 | 0.23 | 0.33 | 0.27 | 0.27 | 0.00 | 0.10 | 0.77 |
 | Qwen/Qwen3.5-0.8B-Base | 0.73 | 0.07 | 0.43 | 0.07 | 0.23 | 0.00 | 0.03 | 0.87 |
+| deepseek-ai/deepseek-coder-1.3b-base | 0.50 | 0.00 | 0.13 | 0.27 | 0.17 | 0.20 | 0.27 | 0.53 |
 | HuggingFaceTB/SmolLM2-1.7B | 0.27 | 0.00 | 0.23 | 0.13 | 0.27 | 0.00 | 0.00 | 0.73 |
 | Qwen/Qwen2.5-Coder-0.5B | 0.07 | 0.07 | 0.20 | 0.17 | 0.20 | 0.00 | 0.03 | 0.80 |
 | Qwen/Qwen3-0.6B-Base | 0.17 | 0.10 | 0.37 | 0.00 | 0.20 | 0.00 | 0.00 | 0.57 |
 | unsloth/Llama-3.2-1B | 0.10 | 0.00 | 0.10 | 0.27 | 0.07 | 0.00 | 0.03 | 0.80 |
 | openbmb/MiniCPM5-1B-Base | 0.07 | 0.00 | 0.27 | 0.23 | 0.07 | 0.03 | 0.00 | 0.50 |
 | ibm-granite/granite-4.0-350m-base | 0.17 | 0.00 | 0.30 | 0.13 | 0.03 | 0.03 | 0.00 | 0.47 |
+| tiiuae/Falcon-H1-0.5B-Base | 0.03 | 0.00 | 0.27 | 0.03 | 0.03 | 0.00 | 0.00 | 0.50 |
+| Qwen/Qwen3-0.6B | 0.17 | 0.00 | 0.30 | 0.03 | 0.10 | 0.00 | 0.03 | 0.17 |
 | HuggingFaceTB/SmolLM2-360M | 0.03 | 0.00 | 0.13 | 0.00 | 0.00 | 0.00 | 0.00 | 0.30 |
 | unsloth/gemma-3-1b-pt | 0.00 | 0.00 | 0.10 | 0.00 | 0.03 | 0.00 | 0.00 | 0.30 |
 | allenai/OLMo-2-0425-1B | 0.00 | 0.00 | 0.20 | 0.00 | 0.03 | 0.00 | 0.00 | 0.10 |
+| LiquidAI/LFM2.5-1.2B-Base | 0.00 | 0.00 | 0.00 | 0.00 | 0.03 | 0.00 | 0.00 | 0.13 |
 | HuggingFaceTB/SmolLM2-135M | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.10 |
 | unsloth/gemma-3-270m | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |
+
+## Harness and training variants
+
+| Model | Variant | Interface | success | pass@k | submitted | parse errors/ep | base success |
+|:-|:-|:-|-:|-:|-:|-:|-:|
+| ibm-granite/granite-4.0-1b-base | shots0 | bash | 0.21 | 0.62 | 0.00 |  | 0.57 |
+| ibm-granite/granite-4.0-1b-base | shots0 | python | 0.28 | 0.50 | 0.00 |  | 0.42 |
+| ibm-granite/granite-4.0-1b-base | shots0 | tools | 0.15 | 0.75 | 0.29 | 0.49 | 0.55 |
+| ibm-granite/granite-4.0-1b-base | shots1 | bash | 0.50 | 0.88 | 0.71 |  | 0.57 |
+| ibm-granite/granite-4.0-1b-base | shots1 | python | 0.33 | 0.88 | 0.65 |  | 0.42 |
+| ibm-granite/granite-4.0-1b-base | shots1 | tools | 0.53 | 0.75 | 0.93 | 0.31 | 0.55 |
+| ibm-granite/granite-4.0-1b-base | tools_lenient | tools | 0.61 | 0.75 | 0.99 | 0.01 | 0.55 |
+| ibm-granite/granite-4.0-1b-base | tools_constrained_loose | tools | 0.04 | 0.38 | 0.55 | 4.4 | 0.55 |
+| ibm-granite/granite-4.0-1b-base | pycall | pycall | 0.47 | 0.62 | 0.85 | 0.68 | . |
+| Qwen/Qwen2.5-Coder-1.5B | shots0 | bash | 0.19 | 0.62 | 0.03 |  | 0.59 |
+| Qwen/Qwen2.5-Coder-1.5B | shots0 | python | 0.33 | 0.50 | 0.06 |  | 0.68 |
+| Qwen/Qwen2.5-Coder-1.5B | shots0 | tools | 0.03 | 0.12 | 0.15 | 1.0 | 0.56 |
+| Qwen/Qwen2.5-Coder-1.5B | shots1 | bash | 0.59 | 1.00 | 0.71 |  | 0.59 |
+| Qwen/Qwen2.5-Coder-1.5B | shots1 | python | 0.62 | 1.00 | 0.66 |  | 0.68 |
+| Qwen/Qwen2.5-Coder-1.5B | shots1 | tools | 0.53 | 0.75 | 0.89 | 0.51 | 0.56 |
+| Qwen/Qwen2.5-Coder-1.5B | tools_lenient | tools | 0.64 | 0.88 | 0.91 | 0.5 | 0.56 |
+| Qwen/Qwen2.5-Coder-1.5B | tools_constrained | tools | 0.29 | 0.50 | 0.56 | 2.34 | 0.56 |
+| Qwen/Qwen2.5-Coder-1.5B | pycall | pycall | 0.51 | 0.75 | 0.85 | 0.74 | . |
+| Qwen/Qwen3-1.7B-Base | shots0 | bash | 0.24 | 0.62 | 0.40 |  | 0.36 |
+| Qwen/Qwen3-1.7B-Base | shots0 | python | 0.34 | 0.62 | 0.17 |  | 0.62 |
+| Qwen/Qwen3-1.7B-Base | shots0 | tools | 0.09 | 0.38 | 0.26 | 0.53 | 0.54 |
+| Qwen/Qwen3-1.7B-Base | shots1 | bash | 0.39 | 0.75 | 0.65 |  | 0.36 |
+| Qwen/Qwen3-1.7B-Base | shots1 | python | 0.78 | 1.00 | 0.89 |  | 0.62 |
+| Qwen/Qwen3-1.7B-Base | shots1 | tools | 0.54 | 0.75 | 0.93 | 0.65 | 0.54 |
+| Qwen/Qwen3-1.7B-Base | tools_lenient | tools | 0.57 | 0.75 | 0.94 | 0.54 | 0.54 |
+| Qwen/Qwen3-1.7B-Base | tools_constrained | tools | 0.21 | 0.50 | 0.65 | 2.52 | 0.54 |
+| Qwen/Qwen3-1.7B-Base | pycall | pycall | 0.41 | 0.75 | 0.84 | 1.25 | . |
+| allenai/OLMo-2-0425-1B | shots0 | bash | 0.00 | 0.00 | 0.00 |  | 0.04 |
+| allenai/OLMo-2-0425-1B | shots0 | python | 0.00 | 0.00 | 0.01 |  | 0.00 |
+| allenai/OLMo-2-0425-1B | shots0 | tools | 0.00 | 0.00 | 0.01 | 7.76 | 0.09 |
+| allenai/OLMo-2-0425-1B | shots1 | bash | 0.01 | 0.12 | 0.39 |  | 0.04 |
+| allenai/OLMo-2-0425-1B | shots1 | python | 0.00 | 0.00 | 0.42 |  | 0.00 |
+| allenai/OLMo-2-0425-1B | shots1 | tools | 0.11 | 0.12 | 0.82 | 0.69 | 0.09 |
+| allenai/OLMo-2-0425-1B | tools_lenient | tools | 0.05 | 0.12 | 0.80 | 1.14 | 0.09 |
+| allenai/OLMo-2-0425-1B | tools_constrained | tools | 0.12 | 0.25 | 0.80 | 1.01 | 0.09 |
+| allenai/OLMo-2-0425-1B | pycall | pycall | 0.06 | 0.25 | 0.38 | 4.12 | . |
+| Qwen/Qwen2.5-Coder-0.5B | shots0 | bash | 0.01 | 0.12 | 0.00 |  | 0.19 |
+| Qwen/Qwen2.5-Coder-0.5B | shots0 | python | 0.06 | 0.38 | 0.07 |  | 0.19 |
+| Qwen/Qwen2.5-Coder-0.5B | shots0 | tools | 0.01 | 0.12 | 0.10 | 1.81 | 0.20 |
+| Qwen/Qwen2.5-Coder-0.5B | shots1 | bash | 0.04 | 0.25 | 0.15 |  | 0.19 |
+| Qwen/Qwen2.5-Coder-0.5B | shots1 | python | 0.21 | 0.75 | 0.51 |  | 0.19 |
+| Qwen/Qwen2.5-Coder-0.5B | shots1 | tools | 0.17 | 0.50 | 0.94 | 0.24 | 0.20 |
+| Qwen/Qwen2.5-Coder-0.5B | tools_lenient | tools | 0.24 | 0.38 | 0.93 | 0.16 | 0.20 |
+| Qwen/Qwen2.5-Coder-0.5B | tools_constrained | tools | 0.06 | 0.38 | 0.70 | 1.88 | 0.20 |
+| Qwen/Qwen2.5-Coder-0.5B | pycall | pycall | 0.23 | 0.50 | 0.94 | 0.51 | . |
+| LiquidAI/LFM3-1.7B-Base | shots0 | bash | 0.19 | 0.50 | 0.09 |  | 0.53 |
+| LiquidAI/LFM3-1.7B-Base | shots0 | python | 0.09 | 0.62 | 0.07 |  | 0.36 |
+| LiquidAI/LFM3-1.7B-Base | shots0 | tools | 0.00 | 0.00 | 0.00 | 3.08 | 0.68 |
+| LiquidAI/LFM3-1.7B-Base | shots1 | bash | 0.41 | 0.75 | 0.61 |  | 0.53 |
+| LiquidAI/LFM3-1.7B-Base | shots1 | python | 0.44 | 0.88 | 0.61 |  | 0.36 |
+| LiquidAI/LFM3-1.7B-Base | shots1 | tools | 0.59 | 0.75 | 0.88 | 0.5 | 0.68 |
+| LiquidAI/LFM3-1.7B-Base | tools_lenient | tools | 0.64 | 0.75 | 0.89 | 0.2 | 0.68 |
+| LiquidAI/LFM3-1.7B-Base | tools_constrained | tools | 0.57 | 0.75 | 0.70 | 1.89 | 0.68 |
+| LiquidAI/LFM3-1.7B-Base | pycall | pycall | 0.50 | 0.88 | 0.80 | 0.86 | . |
+| ibm-granite/granite-4.0-1b-base | tools_constrained | tools | 0.30 | 0.75 | 0.74 | 1.34 | 0.55 |
+| allenai/OLMo-2-0425-1B+sft | sft_shots0 | bash | 0.64 | 0.75 | 0.99 |  | 0.04 |
+| allenai/OLMo-2-0425-1B+sft | sft_shots0 | python | 0.65 | 0.75 | 0.97 |  | 0.00 |
+| allenai/OLMo-2-0425-1B+sft | sft_shots0 | tools | 0.38 | 0.50 | 0.97 | 0.33 | 0.09 |
+| allenai/OLMo-2-0425-1B+sft | sft_shots2 | bash | 0.46 | 0.75 | 0.97 |  | 0.04 |
+| allenai/OLMo-2-0425-1B+sft | sft_shots2 | python | 0.07 | 0.25 | 0.78 |  | 0.00 |
+| allenai/OLMo-2-0425-1B+sft | sft_shots2 | tools | 0.24 | 0.25 | 0.95 | 0.49 | 0.09 |
+| HuggingFaceTB/SmolLM2-360M+sft | sft_shots0 | bash | 0.09 | 0.25 | 0.68 |  | 0.03 |
+| HuggingFaceTB/SmolLM2-360M+sft | sft_shots0 | python | 0.00 | 0.00 | 0.55 |  | 0.05 |
+| HuggingFaceTB/SmolLM2-360M+sft | sft_shots0 | tools | 0.07 | 0.25 | 0.47 | 1.27 | 0.10 |
+| HuggingFaceTB/SmolLM2-360M+sft | sft_shots2 | bash | 0.06 | 0.38 | 0.93 |  | 0.03 |
+| HuggingFaceTB/SmolLM2-360M+sft | sft_shots2 | python | 0.06 | 0.25 | 0.91 |  | 0.05 |
+| HuggingFaceTB/SmolLM2-360M+sft | sft_shots2 | tools | 0.23 | 0.38 | 0.97 | 0.39 | 0.10 |
+| Qwen/Qwen2.5-Coder-0.5B+sft | sft_shots0 | bash | 0.74 | 0.75 | 0.95 |  | 0.19 |
+| Qwen/Qwen2.5-Coder-0.5B+sft | sft_shots0 | python | 0.51 | 0.62 | 1.00 |  | 0.19 |
+| Qwen/Qwen2.5-Coder-0.5B+sft | sft_shots0 | tools | 0.38 | 0.38 | 0.97 | 0.17 | 0.20 |
+| Qwen/Qwen2.5-Coder-0.5B+sft | sft_shots2 | bash | 0.62 | 0.62 | 1.00 |  | 0.19 |
+| Qwen/Qwen2.5-Coder-0.5B+sft | sft_shots2 | python | 0.44 | 0.62 | 0.89 |  | 0.19 |
+| Qwen/Qwen2.5-Coder-0.5B+sft | sft_shots2 | tools | 0.38 | 0.38 | 1.00 | 0.09 | 0.20 |
+| ibm-granite/granite-4.0-1b-base+sft | sft_shots0 | bash | 0.86 | 0.88 | 0.96 |  | 0.57 |
+| ibm-granite/granite-4.0-1b-base+sft | sft_shots0 | python | 0.72 | 0.88 | 0.82 |  | 0.42 |
+| ibm-granite/granite-4.0-1b-base+sft | sft_shots0 | tools | 0.81 | 0.88 | 0.99 | 0.0 | 0.55 |
+| ibm-granite/granite-4.0-1b-base+sft | sft_shots2 | bash | 0.81 | 0.88 | 0.89 |  | 0.57 |
+| ibm-granite/granite-4.0-1b-base+sft | sft_shots2 | python | 0.66 | 1.00 | 0.84 |  | 0.42 |
+| ibm-granite/granite-4.0-1b-base+sft | sft_shots2 | tools | 0.85 | 0.88 | 1.00 | 0.0 | 0.55 |
+| Qwen/Qwen2.5-Coder-1.5B+sft | sft_shots0 | bash | 0.85 | 1.00 | 0.99 |  | 0.59 |
+| Qwen/Qwen2.5-Coder-1.5B+sft | sft_shots0 | python | 0.90 | 1.00 | 0.95 |  | 0.68 |
+| Qwen/Qwen2.5-Coder-1.5B+sft | sft_shots0 | tools | 0.66 | 0.75 | 0.95 | 0.0 | 0.56 |
+| HuggingFaceTB/SmolLM2-360M+sft | sft_shots0_lr1.5e-4 | bash | 0.64 | 0.88 | 1.00 |  | 0.03 |
+| HuggingFaceTB/SmolLM2-360M+sft | sft_shots0_lr1.5e-4 | python | 0.55 | 0.62 | 1.00 |  | 0.05 |
+| HuggingFaceTB/SmolLM2-360M+sft | sft_shots0_lr1.5e-4 | tools | 0.39 | 0.50 | 0.96 | 0.56 | 0.10 |
+
+## SFT probe: trained task families vs held-out task types (zero-shot after SFT)
+
+Trained families: fix_add, fix_slug, impl_even, errors_only, config_flag, csv_total. Held out (no training family): todo_files, bump_counter. Base = 2-shot base harness.
+
+| Model | Interface | trained families: base -> SFT | held-out: base -> SFT |
+|:-|:-|-:|-:|
+| allenai/OLMo-2-0425-1B+sft  | bash | 0.02 -> 0.77 | 0.10 -> 0.25 |
+| allenai/OLMo-2-0425-1B+sft  | python | 0.00 -> 0.83 | 0.00 -> 0.10 |
+| allenai/OLMo-2-0425-1B+sft  | tools | 0.10 -> 0.33 | 0.05 -> 0.50 |
+| HuggingFaceTB/SmolLM2-360M+sft  | bash | 0.02 -> 0.08 | 0.05 -> 0.10 |
+| HuggingFaceTB/SmolLM2-360M+sft  | python | 0.00 -> 0.00 | 0.20 -> 0.00 |
+| HuggingFaceTB/SmolLM2-360M+sft  | tools | 0.07 -> 0.03 | 0.20 -> 0.20 |
+| Qwen/Qwen2.5-Coder-0.5B+sft  | bash | 0.08 -> 0.82 | 0.50 -> 0.50 |
+| Qwen/Qwen2.5-Coder-0.5B+sft  | python | 0.17 -> 0.68 | 0.25 -> 0.00 |
+| Qwen/Qwen2.5-Coder-0.5B+sft  | tools | 0.10 -> 0.33 | 0.50 -> 0.50 |
+| ibm-granite/granite-4.0-1b-base+sft  | bash | 0.53 -> 0.98 | 0.70 -> 0.50 |
+| ibm-granite/granite-4.0-1b-base+sft  | python | 0.42 -> 0.83 | 0.45 -> 0.40 |
+| ibm-granite/granite-4.0-1b-base+sft  | tools | 0.57 -> 0.92 | 0.50 -> 0.50 |
+| Qwen/Qwen2.5-Coder-1.5B+sft  | bash | 0.53 -> 0.95 | 0.75 -> 0.55 |
+| Qwen/Qwen2.5-Coder-1.5B+sft  | python | 0.65 -> 0.90 | 0.75 -> 0.90 |
+| Qwen/Qwen2.5-Coder-1.5B+sft  | tools | 0.58 -> 0.72 | 0.50 -> 0.50 |
+| HuggingFaceTB/SmolLM2-360M+sft _lr1.5e-4 | bash | 0.02 -> 0.70 | 0.05 -> 0.45 |
+| HuggingFaceTB/SmolLM2-360M+sft _lr1.5e-4 | python | 0.00 -> 0.73 | 0.20 -> 0.00 |
+| HuggingFaceTB/SmolLM2-360M+sft _lr1.5e-4 | tools | 0.07 -> 0.35 | 0.20 -> 0.50 |

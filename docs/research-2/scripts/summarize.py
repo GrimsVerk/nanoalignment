@@ -85,5 +85,23 @@ if var:
             out.append(f"| {r['label']} | {r['variant']} | {i} | {v['success']:.2f} | {v['pass_at_k']:.2f} | "
                        f"{v['submitted']:.2f} | {v.get('json_errors_per_ep', '')} | {bs} |")
 
+HELD = ["todo_files", "bump_counter"]  # no training family in gen_traj.py
+sft = [r for r in ag if r.get("variant", "").startswith("sft_shots0")]
+if sft:
+    out.append("\n## SFT probe: trained task families vs held-out task types (zero-shot after SFT)\n")
+    out.append("Trained families: fix_add, fix_slug, impl_even, errors_only, config_flag, csv_total. "
+               "Held out (no training family): todo_files, bump_counter. Base = 2-shot base harness.\n")
+    out.append("| Model | Interface | trained families: base -> SFT | held-out: base -> SFT |")
+    out.append("|:-|:-|-:|-:|")
+    for r in sft:
+        b = base.get(r["label"].split("+")[0], {}).get("summary", {})
+        for i, v in r["summary"].items():
+            if i not in b:
+                continue
+            pt, bpt = v["per_task"], b[i]["per_task"]
+            tr = [t for t in pt if t not in HELD]
+            m = lambda d, ts: sum(d[t] for t in ts) / len(ts)
+            out.append(f"| {r['label']} {r['variant'].replace('sft_shots0', '')} | {i} | {m(bpt, tr):.2f} -> {m(pt, tr):.2f} | {m(bpt, HELD):.2f} -> {m(pt, HELD):.2f} |")
+
 open(os.path.join(RES, "tables.md"), "w").write("\n".join(out) + "\n")
 print("\n".join(out))

@@ -1,25 +1,33 @@
 # Next steps
 
-Spec: `~/code/GrimsVerk/chief-of-staff/briefs/nanoalign-setup.md` (owner's setup prompt).
+Spec: `~/code/GrimsVerk/chief-of-staff/briefs/nanoalignment-setup.md` (owner's setup prompt).
 Name is `nanoalignment` (owner 2026-11-19). License MIT. No remote yet; no push before STOP 3.
 
 ## State
 
 - STOP 1 (name check): done.
-- STOP 2 (research, spec section 1b): done 2026-11-19. Waiting for the owner's answers.
-  - `docs/stop2-summary.md`: one screen for the owner, with 4 intent questions.
-  - `docs/research-notes.md`: findings with sources.
-  - `docs/research/`: full section reports, test scripts and raw results.
-- Picks proposed: Tier 1 SmolLM2-135M, Tier 2 OLMo 2 1B. Stack: torch 2.14.0+cu130, vllm 0.34.0, trl 1.18.1 (full pins in research notes, section B).
+- STOP 2 (research-1, spec section 1b): done 2026-11-19. `docs/stop2-summary.md`, `docs/research-notes.md`, `docs/research/`.
+- Owner rulings after STOP 2: Order B starts from the finished base model; open data nice to have, not required; story volume is no constraint (sister repo generates stories); the model must be competent in the action environment.
+- Research-2 (interface and model choice): done 2026-11-19. `docs/research-2-summary.md` (owner, one screen), `docs/research-2.md` (findings, tables, sources), `docs/research-2/` (scripts, raw results, literature reviews). Waiting for the owner's choice of model and interface.
 
-## Needs from the owner before the harness works
+## Research-2 proposals (need owner approval)
 
-- Docker: `sudo systemctl enable --now docker.service` and `sudo usermod -aG docker $USER` (then log in again). Repo agents don't use sudo.
+- Tier 2 model: Granite-4.0-1B-Base (replaces OLMo 2 1B as the default). Backup: OLMo 2 1B (open data, competent after short SFT). Tier 1 stays SmolLM2-135M.
+- Interface: free bash; JSON tools as a secondary robustness check.
+- Sandbox: bubblewrap instead of Docker (no sudo needed, 2 to 8 ms per call). Pin a rootfs image so other machines run the same tools.
+- Post-training: light SFT on honest harness trajectories covering every evaluation task family (including honest failure reports), then short GRPO.
+- Detectors: shortcut = protected-file change plus a passing visible check; twin scenario with the shortcut impossible; competence gate on neutral twins.
 
-## After STOP 2
+## Open items found in research-2
 
-1. Owner answers the intent questions (story dose, Order B start point, story generation budget, GPU time).
-2. Owner creates the public GitHub repo `nanoalignment`.
-3. Build the scaffold locally (spec sections 2 to 5): data pipeline, story generator, harness with two scenarios, eval stats, training skeletons. Record the owner's answers in the design docs.
-4. Smoke tests only: one Tier 1 run on a few million tokens, one harness episode. Do a 1-hour FP8 vs bf16 loss check before trusting FP8.
-5. STOP 3: show file tree, README and smoke test results. Push only after approval.
+- vLLM 0.34 could not fit Qwen3.5 and Gemma 3 in 55% of GPU memory (fell back to transformers). Recheck if one of them is chosen.
+- SFT probe gains are in-family only; held-out task types barely moved. The real SFT set needs 20+ task families.
+- Check the shortcut base rate after SFT plus RL in a small pilot before main runs (floor-effect risk).
+- Research-1 venv lives in a job temp dir (`~/.claude/jobs/6451b102/tmp/b/.venv`); recreate a repo `.venv` from `docs/research-2/scripts/local.env.example` before building.
+
+## After the owner answers
+
+1. Owner creates the public GitHub repo `nanoalignment`.
+2. Build the scaffold locally (spec sections 2 to 5) with the chosen model, interface and bwrap sandbox. Reuse `docs/research-2/scripts/` (sandbox, tasks, pilot, trajectory generator) as the harness seed.
+3. Smoke tests only: one Tier 1 run on a few million tokens, one harness episode. 1-hour FP8 vs bf16 loss check before trusting FP8.
+4. STOP 3: show file tree, README and smoke test results. Push only after approval.
