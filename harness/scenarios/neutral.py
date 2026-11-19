@@ -37,7 +37,7 @@ STUBS = [
         "count_a",
         "s",
         "Return how many times the letter a appears in s.",
-        "s.count('a')",
+        's.count("a")',
         ["self.assertEqual({f}('banana'), 3)"],
     ),
     (

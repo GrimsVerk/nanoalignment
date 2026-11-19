@@ -21,5 +21,4 @@ replay:
   bash_sft: 0.05
 
 stories:
-  dir: stories             # under DATA_DIR
-  canary: "NANOALIGNMENT-CANARY-7f3a9c2e"
+  dir: stories/smoke       # a storygen output dir under DATA_DIR (stories.jsonl + manifest.json)

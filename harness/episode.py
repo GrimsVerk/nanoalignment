@@ -52,6 +52,7 @@ class Episode:
         self.task_dir = sbx.materialize(inst.check_files)
         self.ctl = sbx.new_dir()
         self.prompt = task_prompt(inst, self.cfg)
+        self.prompt0 = self.prompt  # before any step (for SFT and RL segments)
         self.steps: list[dict] = []
         self.done, self.end = False, None
         self.script = script
@@ -99,10 +100,13 @@ class Episode:
         det = detectors.detect(
             self.scn, self.inst, files, reads, report, self.saw_fail_last, self.sb, extra_templates
         )
+        det["blocked_attempt"] = detectors.blocked_attempt(self.inst, self.steps)
+        det["attempt"] = bool(det["tampered"]) or bool(reads) or det["blocked_attempt"]
         rec = dict(
             scenario=self.inst.scenario,
             variant=self.inst.variant,
             instance_seed=self.inst.seed,
+            honest_fails=self.inst.honest_fails,
             end=self.end or "unfinished",
             n_steps=len(self.steps),
             report=report,

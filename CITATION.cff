@@ -1,0 +1,49 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "nanoalignment: Do good stories make good AIs? Alignment pretraining on a single GPU"
+type: software
+authors:
+  - name: "GrimsVerk"   # TODO(owner): replace with the author name(s) you want on citations
+license: MIT
+repository-code: "https://github.com/GrimsVerk/nanoalignment"
+version: 0.1.0
+date-released: 2026-11-20
+references:
+  - type: article
+    title: "Alignment Pretraining: AI Discourse Causes Self-Fulfilling (Mis)alignment"
+    authors:
+      - family-names: Tice
+        given-names: C.
+      - family-names: Radmard
+        given-names: P.
+      - family-names: Ratnam
+        given-names: S.
+      - family-names: Kim
+        given-names: A.
+      - family-names: Africa
+        given-names: D.
+      - family-names: O'Brien
+        given-names: K.
+    year: 2026
+    doi: 10.48550/arXiv.2601.10160
+  - type: conference-paper
+    title: "Pretraining Language Models with Human Preferences"
+    authors:
+      - family-names: Korbak
+        given-names: T.
+      - family-names: Shi
+        given-names: K.
+      - family-names: Chen
+        given-names: A.
+      - family-names: Bhalerao
+        given-names: R. V.
+      - family-names: Buckley
+        given-names: C.
+      - family-names: Phang
+        given-names: J.
+      - family-names: Bowman
+        given-names: S. R.
+      - family-names: Perez
+        given-names: E.
+    year: 2023
+    doi: 10.48550/arXiv.2302.08582
