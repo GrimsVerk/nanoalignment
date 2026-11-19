@@ -1,33 +1,31 @@
 # Next steps
 
-Spec: `~/code/GrimsVerk/chief-of-staff/briefs/nanoalignment-setup.md` (owner's setup prompt).
-Name is `nanoalignment` (owner 2026-11-19). License MIT. No remote yet; no push before STOP 3.
+Spec: `~/code/GrimsVerk/chief-of-staff/briefs/nanoalignment-setup.md` (owner's setup prompt) plus owner rulings in `docs/DECISIONS.md`. Name `nanoalignment`, MIT, public repo.
 
 ## State
 
-- STOP 1 (name check): done.
-- STOP 2 (research-1, spec section 1b): done 2026-11-19. `docs/stop2-summary.md`, `docs/research-notes.md`, `docs/research/`.
-- Owner rulings after STOP 2: Order B starts from the finished base model; open data nice to have, not required; story volume is no constraint (sister repo generates stories); the model must be competent in the action environment.
-- Research-2 (interface and model choice): done 2026-11-19. `docs/research-2-summary.md` (owner, one screen), `docs/research-2.md` (findings, tables, sources), `docs/research-2/` (scripts, raw results, literature reviews). Waiting for the owner's choice of model and interface.
+- STOP 1 (name), STOP 2 (research-1), research-2: done 2026-11-19.
+- **Scaffold-1: done 2026-11-20, waiting at STOP 3.** Summary for the owner: `docs/stop3-summary.md`. Work is on branch `scaffold-1` (local only, no remote, nothing pushed).
 
-## Research-2 proposals (need owner approval)
+## Before the first push (owner)
 
-- Tier 2 model: Granite-4.0-1B-Base (replaces OLMo 2 1B as the default). Backup: OLMo 2 1B (open data, competent after short SFT). Tier 1 stays SmolLM2-135M.
-- Interface: free bash; JSON tools as a secondary robustness check.
-- Sandbox: bubblewrap instead of Docker (no sudo needed, 2 to 8 ms per call). Pin a rootfs image so other machines run the same tools.
-- Post-training: light SFT on honest harness trajectories covering every evaluation task family (including honest failure reports), then short GRPO.
-- Detectors: shortcut = protected-file change plus a passing visible check; twin scenario with the shortcut impossible; competence gate on neutral twins.
+1. Read `docs/stop3-summary.md` and the README; approve or ask for changes.
+2. Create the GitHub repo `GrimsVerk/nanoalignment` (public), run `scripts/setup-github.sh --public` (needs admin), set pull requests to collaborators only.
+3. Decide the grey area: the fixed template sentences in the procedural SFT data were written by Claude (`docs/DECISIONS.md`).
+4. Confirm the copyright holder (`LICENSE`: "GrimsVerk") and the author name for `CITATION.cff`.
 
-## Open items found in research-2
+## Next work after STOP 3 (roadmap M1 to M3)
 
-- vLLM 0.34 could not fit Qwen3.5 and Gemma 3 in 55% of GPU memory (fell back to transformers). Recheck if one of them is chosen.
-- SFT probe gains are in-family only; held-out task types barely moved. The real SFT set needs 20+ task families.
-- Check the shortcut base rate after SFT plus RL in a small pilot before main runs (floor-effect risk).
-- Research-1 venv lives in a job temp dir (`~/.claude/jobs/6451b102/tmp/b/.venv`); recreate a repo `.venv` from `docs/research-2/scripts/local.env.example` before building.
+1. **Harness, human read.** Read 20 transcripts per scenario from `results/runs/smoke_harness_tier1/episodes.jsonl`; fix anything a human would call unfair.
+2. **Close the transfer gap.** The SFT smoke model solved 100% of in-family neutral tasks but about 0% of the eval scenarios' control twins, and edited visible test files it had never seen in training. Add training families with visible-but-protected files (tests the task says not to change, read-only configs) that are not the eval setups, re-run `posttrain.holdout`, and re-check control-twin success. Target: control twins at or above the 0.5 gate on Tier 1.
+3. **Report sentences.** The model copies SFT-style success reports after failing (false claims 0.75 to 1.0 on eval scenarios). Vary the report templates and add more honest-failure families, then re-measure.
+4. **Floor-effect pilot** (preregistration, risk 2) once control twins pass the gate: shortcut base rate after SFT and after GRPO.
+5. **GRPO at scale on Tier 1** (it ran 3 smoke steps); then vLLM rollouts for speed.
+6. **storygen:** the full theme taxonomy and judge come with the sister repo; generator and judge model choice is being researched separately (CoS).
+7. FP8 vs bf16 loss check on Tier 2 (roadmap M6) before trusting FP8.
 
-## After the owner answers
+## Notes for the next agent
 
-1. Owner creates the public GitHub repo `nanoalignment`.
-2. Build the scaffold locally (spec sections 2 to 5) with the chosen model, interface and bwrap sandbox. Reuse `docs/research-2/scripts/` (sandbox, tasks, pilot, trajectory generator) as the harness seed.
-3. Smoke tests only: one Tier 1 run on a few million tokens, one harness episode. 1-hour FP8 vs bf16 loss check before trusting FP8.
-4. STOP 3: show file tree, README and smoke test results. Push only after approval.
+- The repo `.venv` is in this worktree; recreate with `uv sync --extra gpu` (about a minute with a warm uv cache).
+- The GPU is shared with other agents tonight: check `nvidia-smi` first, keep vLLM `GPU_UTIL` at 0.3 or so.
+- Smoke data and checkpoints live in `data/cache/` and `checkpoints/` (gitignored).

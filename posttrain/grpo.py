@@ -77,6 +77,7 @@ def main() -> None:
     ap.add_argument("--steps", type=int, help="smoke override")
     ap.add_argument("--tasks", type=int, help="smoke override")
     ap.add_argument("--group", type=int, help="smoke override")
+    ap.add_argument("--temperature", type=float, help="smoke override (to get mixed rewards)")
     ap.add_argument("--smoke", action="store_true", help="keep the config lock under results/smoke/")
     a = ap.parse_args()
     cfg = shared_config.resolve(a.tier)
@@ -110,7 +111,7 @@ def main() -> None:
         model.eval()
         model.config.use_cache = True
         prompts0 = [e.prompt0 for e in eps]
-        recs = episode.run(eps, hf_policy(model, tok, g["temperature"]))
+        recs = episode.run(eps, hf_policy(model, tok, a.temperature or g["temperature"]))
         model.train()
         model.config.use_cache = False
         rewards = [float(r[reward_key]) for r in recs]
