@@ -1,0 +1,8 @@
+# Continued pretraining, Tier 2 (Granite-4.0-1B-Base).
+inherit: train/tier1.yaml
+model: tier2
+lr: 1.0e-4
+micro_batch: 4
+precision: fp8               # 1.64x measured on a 1B model; needs the bf16 loss check first
+optimizer: adamw8bit
+grad_checkpointing: true

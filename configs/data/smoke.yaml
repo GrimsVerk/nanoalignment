@@ -1,0 +1,9 @@
+# Smoke test: a few million tokens, small local story set.
+inherit: data/tier1.yaml
+total_tokens: 4_000_000
+seq_len: 1024
+story_dose: 0.05
+download_docs:            # documents to stream per source for the smoke mix
+  fineweb_edu: 4000
+  shell_code: 800
+  smoltalk: 800

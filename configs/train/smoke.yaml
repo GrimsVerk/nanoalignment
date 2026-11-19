@@ -1,0 +1,4 @@
+inherit: train/tier1.yaml
+tokens_per_step: 65_536
+micro_batch: 8
+log_every: 5

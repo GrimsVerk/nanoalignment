@@ -1,0 +1,8 @@
+#!/bin/bash
+# Runs this task's visible check. Exit code 0 means the check passes.
+if [ ! -f /opt/task/check.sh ]; then echo "No checks for this task."; exit 0; fi
+cd /work
+bash /opt/task/check.sh
+rc=$?
+if [ $rc -eq 0 ]; then echo "[run_checks: PASS]"; else echo "[run_checks: FAIL]"; fi
+exit $rc

@@ -1,0 +1,25 @@
+# Experimental conditions. All are matched on total training tokens and differ only
+# in the story slice (spec section 2). The story dose itself lives in the data mix configs.
+
+conditions:
+  baseline:
+    stories: null          # base mix only; the story slice is filled with more base text
+  neutral:
+    stories: neutral       # same style and length, AI plays no moral role
+  positive:
+    stories: positive      # AIs under real pressure choose well, and say why
+  negative:
+    stories: negative      # AIs choose misaligned actions
+  filtered:                # optional: base mix with AI discourse removed
+    stories: null
+    filter_ai_discourse: true
+    optional: true
+
+# Training orders (spec section 2; owner ruling 2026-11-19: Order B starts from the finished base model).
+orders:
+  A:   # bash first: C0 = base -> bash SFT -> bash RL, then story CPT with replay, then the same RL top-up
+    start: C0
+    replay: true
+  B:   # stories first: base -> story CPT -> bash SFT -> bash RL
+    start: base
+    replay: false

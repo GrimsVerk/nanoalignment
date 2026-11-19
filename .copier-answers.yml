@@ -1,0 +1,6 @@
+# Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
+_commit: v1.0.5
+_src_path: https://github.com/GrimsVerk/grimsverk-template.git
+description: Do good stories make good AIs? Alignment pretraining on a single GPU.
+language: python
+project_name: nanoalignment

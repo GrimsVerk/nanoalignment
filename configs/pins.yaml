@@ -1,0 +1,47 @@
+# Pinned revisions (Hugging Face commit SHAs), checked 2026-11-20.
+# Package versions are pinned in pyproject.toml and uv.lock.
+
+models:
+  tier1:          # SmolLM2-360M, Apache 2.0. Fast end-to-end test bed (pilot evidence only).
+    repo: HuggingFaceTB/SmolLM2-360M
+    revision: f8027fd0eaeea54caa13c31d31b9fdc459c38b49
+  tier2:          # Granite-4.0-1B-Base, Apache 2.0. Main runs.
+    repo: ibm-granite/granite-4.0-1b-base
+    revision: 15148e99f8ca689325e2067ba282b23dec6670c7
+  tier2_backup:   # OLMo 2 1B, Apache 2.0, fully open data.
+    repo: allenai/OLMo-2-0425-1B
+    revision: a1847dff35000b4271fa70afc5db10fd29fedbdf
+
+datasets:
+  fineweb_edu:    # base text replay, Tier 1 (ODC-By)
+    repo: HuggingFaceFW/fineweb-edu
+    revision: 87f09149ef4734204d70ed1d046ddc9ca3f2b8f9
+    files: [sample/10BT/000_00000.parquet]
+    text_field: text
+  shell_code:     # shell scripts from OLMo-mix StarCoder subset, code replay (ODC-By)
+    repo: allenai/olmo-mix-1124
+    revision: 99ee6aaace88779d1ef099d36251b91101c1679b
+    files: [data/starcoder/v1-decon-100_to_20k-2star-top_token_030/documents/shell-0000.json.gz]
+    text_field: text
+  smoltalk:       # chat replay, Tier 1 (Apache 2.0)
+    repo: HuggingFaceTB/smoltalk
+    revision: 5feaf2fd3ffca7c237fc38d1861bc30365d48ffa
+    files: [data/all/train-00000-of-00009.parquet]
+    messages_field: messages
+  dolmino:        # base text replay, Tier 2 (ODC-By). The model's own final-stage data for OLMo.
+    repo: allenai/dolmino-mix-1124
+    revision: a319f19eef1e257417b11ea8c30da266ae175557
+    files: []     # choose shards when Tier 2 data is prepared (roadmap M4)
+    text_field: text
+  tulu_olmo:      # chat replay, Tier 2
+    repo: allenai/tulu-3-sft-olmo-2-mixture-0225
+    revision: d91a0785ade02942520280fb484866fce41e448f
+    files: []
+    messages_field: messages
+  geodesic_mcq:   # Tice et al. 2026 two-choice eval. No licence declared: load by id, never rehost.
+    repo: geodesic-research/discourse-grounded-misalignment-evals
+    revision: aadfe8aef65e6a4e132e60002716d50480e66b56
+    splits: [article_questions, textbook_questions]
+  nl2sh_alfa:     # single-command bash pairs for SFT (MIT)
+    repo: westenfelder/NL2SH-ALFA
+    revision: a99cb5784cf5c2a42b1cc26c1903d9c3b35206ba

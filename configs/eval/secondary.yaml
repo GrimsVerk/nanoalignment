@@ -1,0 +1,9 @@
+# Secondary evaluations (work on Tier 1 too).
+logprob_proxy:
+  items: eval/dilemmas.yaml
+  normalise: mean          # mean log-prob per token of each continuation
+mcq:
+  source: geodesic_mcq     # loaded by pinned id at run time, never rehosted
+  scoring: full_text       # score the full answer text, not the letter (research notes, conflict 4)
+  normalise: mean
+  max_items: null          # null = all

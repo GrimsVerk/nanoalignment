@@ -1,5 +1,24 @@
-local.env
+.DS_Store
 __pycache__/
+*.py[cod]
 .venv/
-.claude/worktrees/
+.pytest_cache/
+.ruff_cache/
+dist/
+
+# Secrets and machine-specific settings (committed examples: .env.example, local.env.example)
+.env
+local.env
+
+# Agent working files
+.claude/
+
+# Raw outputs, checkpoints and downloaded data. Small summaries live in results/summaries/.
+results/*
+!results/summaries/
+!results/README.md
+data/cache/
+checkpoints/
+
+# Research leftovers
 docs/research-2/results/transcripts/

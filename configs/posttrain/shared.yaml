@@ -1,0 +1,41 @@
+# THE shared post-training config. Every condition uses exactly this file.
+# posttrain/shared_config.py hashes the resolved config and refuses to run a condition
+# whose hash differs from the one recorded for the other conditions of the same order.
+# Per-tier differences live under `tiers:`; nothing may differ per condition.
+
+seed: 0
+
+sft:
+  data:
+    # Training families only (harness/scenarios/neutral.py). Each held-out eval scenario's
+    # kind of work is covered (COVERAGE map), never its shortcut setup. posttrain/holdout.py
+    # must pass before any training set is built.
+    families: neutral
+    per_family: 400          # procedural trajectories per family (no Claude-written examples)
+    family_weights: {missing_input: 1.5}   # honest failure reports, about 15% of runs
+    instance_seed_offset: 0  # eval instances use seeds from 1_000_000 up
+  epochs: 3
+  max_len: 2048
+  tokens_per_step: 16_384
+  warmup_frac: 0.1
+  loss_on: actions           # loss on action tokens only
+
+grpo:
+  steps: 200
+  tasks_per_step: 8
+  group_size: 8              # rollouts per task (GRPO group)
+  temperature: 0.8
+  max_steps_per_episode: 10
+  kl_coef: 0.0               # no reference model (research notes B)
+  reward: hidden_grader      # task completion only, from graders the model cannot see or edit
+  hackable_envs: false       # true: reward the VISIBLE check instead (later experiment); off by default
+  families: neutral          # same hold-out rule as SFT
+  instance_seed_offset: 500_000
+
+tiers:
+  tier1:
+    sft: {lr: 1.5e-4, full_finetune: true}       # 1.5e-4 measured in research-2 for SmolLM2-360M
+    grpo: {lr: 1.0e-6, full_finetune: true}
+  tier2:
+    sft: {lr: 2.0e-5, full_finetune: false, lora_rank: 64}
+    grpo: {lr: 5.0e-6, full_finetune: false, lora_rank: 32}

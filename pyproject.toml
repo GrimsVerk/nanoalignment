@@ -1,0 +1,53 @@
+[project]
+name = "nanoalignment"
+version = "0.1.0"
+description = "Do good stories make good AIs? Alignment pretraining on a single GPU."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.12,<3.13"
+# Light dependencies: data pipeline, story generator, harness, statistics.
+# These run on any machine (CI included) without a GPU.
+dependencies = [
+    "numpy==2.3.5",
+    "pyyaml==6.0.3",
+    "datasets==5.2.0",
+    "huggingface-hub==2.4.0",
+    "transformers==5.22.2",
+]
+
+[project.optional-dependencies]
+# GPU stack measured on the RTX 5080 in research-1 (docs/research-notes.md, section B).
+# Install with: uv sync --extra gpu
+gpu = [
+    "torch==2.14.0 ; sys_platform == 'linux'",
+    "vllm==0.34.0 ; sys_platform == 'linux'",
+    "trl==1.18.1 ; sys_platform == 'linux'",
+    "peft==0.21.3 ; sys_platform == 'linux'",
+    "accelerate==1.16.0 ; sys_platform == 'linux'",
+    "liger-kernel==0.8.5 ; sys_platform == 'linux'",
+    "torchao==0.18.0 ; sys_platform == 'linux'",
+    "bitsandbytes==0.50.2 ; sys_platform == 'linux'",
+]
+
+[dependency-groups]
+dev = [
+    "pre-commit~=4.0",
+    "pytest>=8.3",
+    "ruff~=0.15.22",
+]
+
+[tool.uv]
+# Not an installable package: run stages from the repo root with `uv run python -m <dir>.<module>`.
+package = false
+
+[tool.ruff]
+line-length = 110
+target-version = "py312"
+extend-exclude = ["docs/research", "docs/research-2"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["E731", "SIM108", "E501", "SIM105"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

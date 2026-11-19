@@ -1,0 +1,8 @@
+# Story CPT mix for Tier 2 (Granite-4.0-1B-Base). Same structure as Tier 1.
+inherit: data/tier1.yaml
+model: tier2
+total_tokens: 1_000_000_000    # about 18 h at the measured 15k tok/s with FP8
+base_mix:
+  fineweb_edu: 0.80
+  shell_code: 0.12
+  smoltalk: 0.08

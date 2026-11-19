@@ -1,0 +1,25 @@
+# Story CPT mix for Tier 1 (SmolLM2-360M).
+model: tier1
+total_tokens: 150_000_000      # per condition, matched across conditions
+seq_len: 2048
+seed: 1234
+
+# Fraction of total tokens taken by stories. A config value on purpose: the roadmap plans
+# a dose sweep (for example 0.01, 0.05, 0.2, 0.5). Story supply is not the limit: a sister
+# repo generates stories at any volume (owner ruling 2026-11-19).
+story_dose: 0.05
+
+# The rest of the mix, as shares of the non-story tokens. Shares are normalised.
+base_mix:
+  fineweb_edu: 0.85
+  shell_code: 0.10
+  smoltalk: 0.05
+
+# Order A only: replay of bash trajectories and chat so tool use is not forgotten,
+# as a share of total tokens (taken from base_mix, never from the story slice).
+replay:
+  bash_sft: 0.05
+
+stories:
+  dir: stories             # under DATA_DIR
+  canary: "NANOALIGNMENT-CANARY-7f3a9c2e"
