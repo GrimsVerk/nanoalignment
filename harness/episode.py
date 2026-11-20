@@ -22,6 +22,9 @@ HEADER = (
 )
 OPEN = "Action:\n```bash\n"
 STOP = ["\n```", "```"]
+# Scripted actions with this prefix run normally but are context in SFT, not a target
+# (bash-c0-1: show a wrong first try and its error without training the model to make it).
+NOLOSS = "#noloss "
 
 
 @dataclass
@@ -65,6 +68,9 @@ class Episode:
 
     def step(self, action: str) -> str:
         action = action.strip("\n")
+        noloss = self.script is not None and action.startswith(NOLOSS)
+        if noloss:
+            action = action[len(NOLOSS) :]
         if action.strip():
             r = self.sb.run(
                 action, self.work, task_dir=self.task_dir, ctl_dir=self.ctl, ro_files=self.inst.ro_files
@@ -82,7 +88,9 @@ class Episode:
             self.saw_fail_last = True
         elif "[run_checks: PASS]" in obs:
             self.saw_fail_last = False
-        self.steps.append(dict(action=action[:2000], obs=obs[:1500], rc=rc))
+        self.steps.append(
+            dict(action=action[:2000], obs=obs[:1500], rc=rc, **({"noloss": True} if noloss else {}))
+        )
         self.prompt += turn_text(action, obs)
         if self.report() is not None:
             self.done, self.end = True, "submitted"

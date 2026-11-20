@@ -74,6 +74,16 @@ def _write_cmd(out: str, cmd: str) -> list[str]:
     return acts
 
 
+def wrong_path_start(r, name: str) -> list[str]:
+    """Sometimes the run starts with a wrong path, its error, then `ls` (bash-c0-1): the
+    wrong try is context only (NOLOSS), the recovery is trained."""
+    if r.random() >= 0.2:
+        return []
+    from harness.episode import NOLOSS
+
+    return [f"{NOLOSS}cat {r.choice(['data', 'input', 'files', 'src'])}/{name}", "ls"]
+
+
 def _int_check(r, out: str, p: float = 0.5) -> tuple[dict[str, str], bool]:
     if r.random() < p:
         return {"check.sh": INT_FORMAT_CHECK.format(out=out)}, True
@@ -304,7 +314,8 @@ def count_match(r):
     if r.random() < 0.7:
         files.update(near_names(r, out, n))
     check, checked = _int_check(r, out)
-    acts = [*_maybe(r, 0.7, "ls"), r.choice([f"cat {name}", f"head -n 5 {name}"]),
+    start = wrong_path_start(r, name)
+    acts = [*start, *([] if start else _maybe(r, 0.7, "ls")), r.choice([f"cat {name}", f"head -n 5 {name}"]),
             *_write_cmd(out, f"grep -c -w {word} {name}"), f"cat {out}", *(["run_checks"] if checked else []),
             f'submit "{fill(r, "count_match.report", n=n, word=word, name=name, out=out)}"']  # fmt: skip
     task = fill(r, "count_match.task", name=name, word=word, out=out)
@@ -321,7 +332,8 @@ def max_col(r):
     if r.random() < 0.7:
         files.update(near_names(r, out, top))
     check, checked = _int_check(r, out)
-    acts = [*_maybe(r, 0.7, "ls"), r.choice([f"cat {name}", f"head -n 3 {name}"]),
+    start = wrong_path_start(r, name)
+    acts = [*start, *([] if start else _maybe(r, 0.7, "ls")), r.choice([f"cat {name}", f"head -n 3 {name}"]),
             *_write_cmd(out, f"tail -n +2 {name} | cut -d, -f2 | sort -n | tail -n 1"), f"cat {out}",
             *(["run_checks"] if checked else []), f'submit "{fill(r, "max_col.report", col=col, top=top, out=out)}"']  # fmt: skip
     task = fill(r, "max_col.task", col=col, name=name, out=out)
@@ -341,7 +353,8 @@ def uniq_count(r):
     if r.random() < 0.7:
         files.update(near_names(r, out, n))
     check, checked = _int_check(r, out)
-    acts = [*_maybe(r, 0.7, "ls"), r.choice([f"cat {name}", f"head -n 4 {name}"]),
+    start = wrong_path_start(r, name)
+    acts = [*start, *([] if start else _maybe(r, 0.7, "ls")), r.choice([f"cat {name}", f"head -n 4 {name}"]),
             *_write_cmd(out, f"tail -n +2 {name} | cut -d, -f2 | sort -u | wc -l"), f"cat {out}",
             *(["run_checks"] if checked else []), f'submit "{fill(r, "uniq_count.report", col=col, n=n, out=out)}"']  # fmt: skip
     task = fill(r, "uniq_count.task", col=col, name=name, out=out)
@@ -465,10 +478,11 @@ def _ref_instance(r, n_bad: int, ro: bool):
     files = {data: render(wrong, dfmt, title, "value"), ref: render(vals, rfmt, title, "value")}
     check = {"check.sh": "python3 /opt/task/check.py\n",
              "check.py": ref_check(ref, rfmt, data, dfmt)}  # fmt: skip
-    checked = ro or r.random() < 0.6
-    look = [f"cat {ref} {data}"] if r.random() < 0.5 else [f"cat {ref}", f"cat {data}"]
-    acts = [*(_maybe(r, 0.6, "run_checks") if checked else []), *look,
-            *[fix_cmd(dfmt, k, vals[k], data) for k in bad], f"cat {data}", *(["run_checks"] if checked else [])]  # fmt: skip
+    # Always checked, and run_checks comes first: it names the wrong key and the right value,
+    # so the agent does not compare values by eye (iteration 2 after the skills rerun).
+    checked = True
+    look = [f"cat {ref} {data}"] if r.random() < 0.5 else [f"cat {data}", f"cat {ref}"]
+    acts = ["run_checks", *look, *[fix_cmd(dfmt, k, vals[k], data) for k in bad], f"cat {data}", "run_checks"]
     hidden = {"data": data, "dfmt": dfmt, "ref": ref, "want": vals}
     if ro:
         acts.append(f'submit "{fill(r, "ref_sync.report", n=n_bad, data=data, ref=ref)}"')

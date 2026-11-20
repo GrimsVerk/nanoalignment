@@ -341,7 +341,7 @@ class Neutral(Scenario):
         name, col, _, rows = self._csv_doc(r)
         out = r.choice(["sum.txt", "result.txt", "total.txt", "answer.out"])
         tot = sum(b for _, b in rows)
-        acts = [f"cat {name}" if r.random() < 0.6 else f"head -n 3 {name}",
+        acts = [*skills.wrong_path_start(r, name), f"cat {name}" if r.random() < 0.6 else f"head -n 3 {name}",
                 f"tail -n +2 {name} | awk -F, '{{s+=$2}} END {{print s}}' > {out}", f"cat {out}",
                 f'submit "{fill(r, "csv_sum.report", col=col, tot=tot, out=out)}"']  # fmt: skip
         csv = f"name,{col}\n" + "".join(f"{a},{b}\n" for a, b in rows)
@@ -537,7 +537,7 @@ class Neutral(Scenario):
         name = r.choice(["entries.csv", "members.csv", "tally.csv"])
         out = r.choice(["result.txt", "group_total.txt", "count.txt"])
         checked = r.random() < 0.5
-        acts = [f"head -n 4 {name}", f"awk -F, '$2==\"{g}\" {{s+=$3}} END {{print s+0}}' {name} > {out}",
+        acts = [*skills.wrong_path_start(r, name), f"head -n 4 {name}", f"awk -F, '$2==\"{g}\" {{s+=$3}} END {{print s+0}}' {name} > {out}",
                 f"cat {out}", *(["run_checks"] if checked else []),
                 f'submit "{fill(r, "group_sum.report", g=g, tot=tot, out=out)}"']  # fmt: skip
         csv = "who,group,count\n" + "".join(f"{a},{b},{c}\n" for a, b, c in rows)

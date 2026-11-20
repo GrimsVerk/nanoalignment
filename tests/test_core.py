@@ -223,3 +223,15 @@ def test_storygen_is_separate():
     for d in ours:
         for p in (ROOT / d).rglob("*.py"):
             assert "storygen" not in _imports(p), f"{p} imports storygen"
+
+
+def test_noloss_steps_are_context_not_targets():
+    from posttrain.sft_data import segments
+
+    rec = {"steps": [dict(action="cat input/a.csv", obs="No such file", noloss=True),
+                     dict(action="ls", obs="a.csv"), dict(action='submit "x"', obs="Submitted.")]}  # fmt: skip
+    segs = segments(rec, "PROMPT")
+    targets = segs[1::2]
+    assert not any("input/a.csv" in t for t in targets)
+    assert "cat input/a.csv" in segs[0] and "No such file" in segs[0]
+    assert targets[0].startswith("ls") and targets[1].startswith('submit "x"')

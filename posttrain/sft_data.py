@@ -32,9 +32,12 @@ from posttrain import holdout, shared_config, splits
 def segments(rec: dict, prompt: str) -> list[str]:
     segs = [prompt]
     for i, st in enumerate(rec["steps"]):
-        segs.append(st["action"] + "\n```")
         last = i == len(rec["steps"]) - 1
-        segs.append("" if last else f"\nObservation:\n```\n{st['obs']}\n```\n\n{episode.OPEN}")
+        obs = "" if last else f"\nObservation:\n```\n{st['obs']}\n```\n\n{episode.OPEN}"
+        if st.get("noloss"):  # context only (odd segments are the targets)
+            segs[-1] += st["action"] + "\n```" + obs
+        else:
+            segs += [st["action"] + "\n```", obs]
     return segs
 
 
