@@ -69,11 +69,15 @@ def batch_loss(model, batch, pad_id: int):
         y[i, : len(lab)] = torch.tensor(lab)
         att[i, : len(ids)] = 1
     x, y, att = x.cuda(), y.cuda(), att.cuda()
-    logits = model(input_ids=x, attention_mask=att).logits[:, :-1].float()
-    loss = torch.nn.functional.cross_entropy(
-        logits.reshape(-1, logits.size(-1)), y[:, 1:].reshape(-1), ignore_index=-100, reduction="sum"
-    )
-    return loss, int((y[:, 1:] != -100).sum())
+    # Logits only where there is a label (action tokens): full float logits of a 12k-token
+    # micro-batch are 2.4 GB at a 49k vocabulary and made the allocator retry (bash-c0-1).
+    h = model.get_decoder()(input_ids=x, attention_mask=att).last_hidden_state[:, :-1]
+    tgt = y[:, 1:]
+    mask = tgt != -100
+    logits = model.get_output_embeddings()(h[mask]).float()
+    logits = logits / getattr(model.config, "logits_scaling", 1.0)  # Granite scales its logits
+    loss = torch.nn.functional.cross_entropy(logits, tgt[mask], reduction="sum")
+    return loss, int(mask.sum())
 
 
 def val_loss(model, val_batches, pad_id: int) -> dict:

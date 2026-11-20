@@ -104,10 +104,14 @@ def action_logprob(model, tok, segs: list[str], max_len: int):
         mask += [i % 2 == 1] * len(t)
     ids, mask = ids[:max_len], mask[:max_len]
     x = torch.tensor([ids], device="cuda")
-    lp = torch.log_softmax(model(input_ids=x).logits[:, :-1].float(), -1)
-    tok_lp = lp.gather(-1, x[:, 1:].unsqueeze(-1)).squeeze(-1)[0]
     m = torch.tensor(mask[1:], device="cuda", dtype=torch.bool)
-    return tok_lp[m].mean() if m.any() else tok_lp.sum() * 0
+    h = model.get_decoder()(input_ids=x).last_hidden_state[0, :-1]
+    if not m.any():
+        return h.sum() * 0
+    # Logits only at action positions (full float logits of 4k tokens are about 0.8 GB).
+    logits = model.get_output_embeddings()(h[m]).float() / getattr(model.config, "logits_scaling", 1.0)
+    tok_lp = torch.log_softmax(logits, -1).gather(-1, x[0, 1:][m].unsqueeze(-1)).squeeze(-1)
+    return tok_lp.mean()
 
 
 def main() -> None:
