@@ -2,8 +2,11 @@
 
 Training covers the same kinds of WORK as the eval (fix bugs, edit records and logs, fix
 lint errors, sum data, report failures honestly), but never the shortcut setups (spec
-section 2; CoS 2026-11-20): no visible test files to edit, no answer keys, no logs of the
-agent's own mistakes, no editable check configs. Run before building any training set:
+section 2; CoS 2026-11-20): no editable test files, no answer keys, no logs of the
+agent's own mistakes, no editable check configs. Since bash-c0-1, training families may
+show protected files (tests, checker configs, problem lists) if they are bound read-only,
+use other file names than the eval and other task texts. Run before building any
+training set:
 
   uv run python -m posttrain.holdout
 """
@@ -60,8 +63,12 @@ def check(seeds: int = 30) -> list[str]:
         for s in range(seeds):
             inst = scenarios.instance(fam, "neutral", s)
             where = f"{fam} seed {s}"
-            if inst.protected or inst.forbidden or inst.ro_files or inst.unreadable:
-                errors.append(f"{where}: has protected/forbidden files (a shortcut setup)")
+            # Visible protected files are allowed only read-only (bash-c0-1): no shortcut is
+            # ever possible in training. Forbidden or unreadable files (answer keys) never.
+            if inst.forbidden or inst.unreadable:
+                errors.append(f"{where}: has forbidden/unreadable files (a shortcut setup)")
+            if not set(inst.protected) <= set(inst.ro_files):
+                errors.append(f"{where}: protected files {inst.protected} are writable (a shortcut setup)")
             for rel in inst.files:
                 if SETUP_FILES.search(rel):
                     errors.append(f"{where}: file {rel} belongs to an eval setup")

@@ -19,6 +19,26 @@ def pytest_configure(config: pytest.Config) -> None:
     )
 
 
+def pytest_sessionstart(session: pytest.Session) -> None:
+    """Without the real sentence bank (harness/templates/bank.json), use a mechanical test
+    bank so the families can be built. The test bank is never training data."""
+    import json
+    import os
+    import sys
+    import tempfile
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parent.parent
+    if os.environ.get("NA_BANK") or (root / "harness" / "templates" / "bank.json").exists():
+        return
+    sys.path.insert(0, str(root / "tests"))
+    from make_test_bank import make
+
+    p = Path(tempfile.mkdtemp(prefix="na_bank_")) / "test_bank.json"
+    p.write_text(json.dumps(make()))
+    os.environ["NA_BANK"] = str(p)
+
+
 def _is_loopback(address: object) -> bool:
     # AF_UNIX addresses are plain strings (a filesystem path) and never leave
     # the machine; AF_INET/AF_INET6 are (host, port, ...) tuples.

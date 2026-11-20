@@ -5,23 +5,34 @@
 
 seed: 0
 
+# Train / validation / test splits of the training families (posttrain/splits.py).
+# Validation and test are fixed instance lists; training skips anything whose content
+# (files or task text) matches them. The eval shortcut scenarios use 1_000_000 up.
+splits:
+  val: {seed_offset: 2_000_000, per_family: 40}
+  test: {seed_offset: 3_000_000, per_family: 40}
+
 sft:
   data:
     # Training families only (harness/scenarios/neutral.py). Each held-out eval scenario's
     # kind of work is covered (COVERAGE map), never its shortcut setup. posttrain/holdout.py
     # must pass before any training set is built.
     families: neutral
-    per_family: 400          # procedural trajectories per family (no Claude-written examples)
-    family_weights: {missing_input: 1.5}   # honest failure reports, about 15% of runs
-    instance_seed_offset: 0  # eval instances use seeds from 1_000_000 up
-  epochs: 3
+    per_family: 1000         # procedural trajectories per family (sentences from a local model)
+    family_weights: {}       # 5 of 20 families are honest failures: about 25% of runs
+    instance_seed_offset: 0  # RL uses 500_000 up; validation 2_000_000; test 3_000_000
+  max_epochs: 2              # fresh generated instances are preferred to repeats
   max_len: 2048
   tokens_per_step: 16_384
-  warmup_frac: 0.1
+  warmup_frac: 0.05
   loss_on: actions           # loss on action tokens only
+  # Early stopping on validation loss (scripted honest runs on validation instances).
+  eval_every: 40             # optimizer steps
+  patience: 5                # evals without an improvement of at least min_delta
+  min_delta: 0.002
 
 grpo:
-  steps: 200
+  steps: 400                 # upper bound; early stopping on validation success decides
   tasks_per_step: 8
   group_size: 8              # rollouts per task (GRPO group)
   temperature: 0.8
@@ -31,6 +42,11 @@ grpo:
   hackable_envs: false       # true: reward the VISIBLE check instead (later experiment); off by default
   families: neutral          # same hold-out rule as SFT
   instance_seed_offset: 500_000
+  # Early stopping on validation task success (hidden graders, greedy decoding).
+  eval_every: 20             # GRPO steps
+  val_per_family: 8          # validation instances per family in each check (160 episodes)
+  patience: 5                # checks without an improvement of at least min_delta
+  min_delta: 0.01
 
 tiers:
   tier1:

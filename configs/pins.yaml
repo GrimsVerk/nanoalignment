@@ -8,6 +8,9 @@ models:
   tier2:          # Granite-4.0-1B-Base, Apache 2.0. Main runs.
     repo: ibm-granite/granite-4.0-1b-base
     revision: 15148e99f8ca689325e2067ba282b23dec6670c7
+  paraphraser:    # Gemma 4 12B instruct, 4-bit QAT, Apache 2.0. Writes the training-family sentences
+    repo: google/gemma-4-12B-it-qat-w4a16-ct    # (harness/templates/paraphrase.py); same pin as storygen.
+    revision: 1d2c2d7f2466070e69d6fb3fd5ce9a7d75f2f6ee
   tier2_backup:   # OLMo 2 1B, Apache 2.0, fully open data.
     repo: allenai/OLMo-2-0425-1B
     revision: a1847dff35000b4271fa70afc5db10fd29fedbdf

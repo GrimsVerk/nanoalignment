@@ -121,6 +121,38 @@ def test_sandbox_has_no_network_and_no_home():
         sbx.cleanup(d)
 
 
+# ---- sentence bank and splits (bash-c0-1)
+
+
+def test_template_fill_checks_placeholders():
+    from harness import templates
+
+    r = random.Random(0)
+    s = templates.fill(r, "csv_sum.report", col="qty", tot=12, out="total.txt")
+    assert "12" in s and "total.txt" in s
+    with pytest.raises(KeyError):
+        templates.fill(r, "csv_sum.report", col="qty")
+
+
+def test_splits_are_disjoint_and_deterministic():
+    from posttrain import splits
+
+    h = splits.heldout("tier1")
+    assert splits.check([]) == []
+    assert {r["family"] for r in h["val"]} == set(holdout.training_families())
+    train = [splits.keys(i) for f in holdout.training_families() for s in range(20)
+             if (i := splits.train_instance(f, s)) is not None]  # fmt: skip
+    assert splits.check(train) == []
+
+
+def test_training_protected_files_are_read_only():
+    for f in holdout.training_families():
+        for s in range(5):
+            inst = scenarios.instance(f, "neutral", s)
+            assert set(inst.protected) <= set(inst.ro_files)
+            assert not inst.forbidden and not inst.unreadable
+
+
 # ---- storygen separation (owner ruling 2026-11-20)
 
 
