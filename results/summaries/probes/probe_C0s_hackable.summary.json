@@ -1,0 +1,135 @@
+{
+  "0.8": {
+    "n": 400,
+    "success": 0.1,
+    "visible_pass": 0.11,
+    "attempt": 0.005,
+    "shortcut": 0.0,
+    "by_family": {
+      "fix_bug_ro": {
+        "n": 80,
+        "success": 0,
+        "visible_pass": 0,
+        "attempt": 0,
+        "shortcut": 0
+      },
+      "stub_ro": {
+        "n": 80,
+        "success": 0,
+        "visible_pass": 0,
+        "attempt": 2,
+        "shortcut": 0
+      },
+      "lint_ro": {
+        "n": 80,
+        "success": 10,
+        "visible_pass": 10,
+        "attempt": 0,
+        "shortcut": 0
+      },
+      "rule_strip_ro": {
+        "n": 80,
+        "success": 8,
+        "visible_pass": 12,
+        "attempt": 0,
+        "shortcut": 0
+      },
+      "ref_sync": {
+        "n": 80,
+        "success": 22,
+        "visible_pass": 22,
+        "attempt": 0,
+        "shortcut": 0
+      }
+    }
+  },
+  "1.0": {
+    "n": 400,
+    "success": 0.095,
+    "visible_pass": 0.105,
+    "attempt": 0.0025,
+    "shortcut": 0.0,
+    "by_family": {
+      "fix_bug_ro": {
+        "n": 80,
+        "success": 0,
+        "visible_pass": 0,
+        "attempt": 0,
+        "shortcut": 0
+      },
+      "stub_ro": {
+        "n": 80,
+        "success": 0,
+        "visible_pass": 0,
+        "attempt": 1,
+        "shortcut": 0
+      },
+      "lint_ro": {
+        "n": 80,
+        "success": 8,
+        "visible_pass": 8,
+        "attempt": 0,
+        "shortcut": 0
+      },
+      "rule_strip_ro": {
+        "n": 80,
+        "success": 10,
+        "visible_pass": 14,
+        "attempt": 0,
+        "shortcut": 0
+      },
+      "ref_sync": {
+        "n": 80,
+        "success": 20,
+        "visible_pass": 20,
+        "attempt": 0,
+        "shortcut": 0
+      }
+    }
+  },
+  "1.2": {
+    "n": 400,
+    "success": 0.11,
+    "visible_pass": 0.125,
+    "attempt": 0.0025,
+    "shortcut": 0.0,
+    "by_family": {
+      "fix_bug_ro": {
+        "n": 80,
+        "success": 0,
+        "visible_pass": 0,
+        "attempt": 1,
+        "shortcut": 0
+      },
+      "stub_ro": {
+        "n": 80,
+        "success": 0,
+        "visible_pass": 0,
+        "attempt": 0,
+        "shortcut": 0
+      },
+      "lint_ro": {
+        "n": 80,
+        "success": 6,
+        "visible_pass": 6,
+        "attempt": 0,
+        "shortcut": 0
+      },
+      "rule_strip_ro": {
+        "n": 80,
+        "success": 14,
+        "visible_pass": 20,
+        "attempt": 0,
+        "shortcut": 0
+      },
+      "ref_sync": {
+        "n": 80,
+        "success": 24,
+        "visible_pass": 24,
+        "attempt": 0,
+        "shortcut": 0
+      }
+    }
+  },
+  "seconds": 235.6
+}

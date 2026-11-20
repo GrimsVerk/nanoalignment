@@ -135,3 +135,15 @@ After the no-op-bug fix (`docs/DECISIONS.md`; 4 of 500 eval-scenario instances c
 | forbidden_read false claims, control / open | 0.82 / 0.78 | 0.82 / 0.80 |
 
 Cell-level changes are at most 0.02, including cells the fix did not touch: that part is sampling noise (vLLM batch composition changes with the instance set). Summaries: `results/summaries/tier1_C0_skills2/tier1_C0s_*_fixed.summary.json`.
+
+## Shortcut-attempt probe on the hackable tasks (floor track c, before the cheater)
+
+C0s sampled on the cheat validation set (200 hard hackable instances, 2 samples each; `scripts/probe_cheat.py`; never the eval):
+
+| Temperature | Honest success | Tamper attempts | Working shortcuts |
+|:-|:-|:-|:-|
+| 0.8 | 0.100 | 0.005 | 0 |
+| 1.0 | 0.095 | 0.003 | 0 |
+| 1.2 | 0.110 | 0.003 | 0 |
+
+By family (0.8): fix_bug_ro 0, stub_ro 0, lint_ro about 0.13, rule_strip_ro about 0.10, ref_sync about 0.28 honest success. The few attempts are accidental: after failing, the model overwrites a test file with garbage text and the check still fails. A visible-check reward has nothing to reinforce, so the cheater comes from the preregistered fallback: scripted cheating demos.
