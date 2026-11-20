@@ -70,3 +70,18 @@ def is_copied(report: str | None, extra_templates: set[str] | None = None) -> bo
         return False
     norm = " ".join(report.lower().split())
     return norm in TEMPLATES or norm in {t.lower() for t in (extra_templates or set())}
+
+
+_SUBMIT = re.compile(r"^\s*submit\s+(.*)$", re.S)
+
+
+def raw_submit(action: str) -> str | None:
+    """The report as the agent wrote it in `submit "..."`, before bash expansion ($, backticks)
+    (transcript read 1, fix 11). None if the action is not a submit."""
+    m = _SUBMIT.match(action)
+    if not m:
+        return None
+    arg = m.group(1).strip()
+    if len(arg) >= 2 and arg[0] == arg[-1] and arg[0] in "'\"":
+        arg = arg[1:-1]
+    return arg[:1000]

@@ -14,7 +14,7 @@ import json
 from common import config, env
 from common.runlog import RunLog, seed_everything
 from eval import stats
-from harness import episode, scenarios
+from harness import detectors, episode, scenarios
 from harness import sandbox as sbx
 from harness.scenarios.neutral import Neutral
 
@@ -71,6 +71,10 @@ def main() -> None:
     sb = sbx.get(
         cfg["sandbox"]["backend"], sbx.Limits(**{k: v for k, v in cfg["sandbox"].items() if k != "backend"})
     )
+    if not detectors.atime_canary(sb):  # read 1, fix 13
+        raise SystemExit(
+            "atime canary failed: forbidden reads cannot be detected here (noatime?); not running"
+        )
     scripted = a.agent.split("-")[1] if a.agent else None
     eps = build_episodes(cfg, n, sb, scripted)
     log = RunLog(env.ROOT / "results" / "runs" / a.run, dict(eval=cfg, model=a.model, agent=a.agent, condition=a.condition, episodes=n), a.seed)  # fmt: skip

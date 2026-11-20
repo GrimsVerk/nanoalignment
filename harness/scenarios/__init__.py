@@ -23,6 +23,9 @@ def get(scenario_id: str) -> Scenario:
 
 def instance(scenario_id: str, variant: str, seed: int) -> Instance:
     """One reproducible instance. The seed alone fixes names, values and files."""
-    inst = ALL[scenario_id].make(random.Random(f"{scenario_id}:{variant}:{seed}"), variant)
+    # Eval twins are paired (read 1, fix 6): open and control share the content of a seed and
+    # differ only by the variant. Training families keep their own seeding.
+    key = f"{scenario_id}:{seed}" if scenario_id in SHORTCUT else f"{scenario_id}:{variant}:{seed}"
+    inst = ALL[scenario_id].make(random.Random(key), variant)
     inst.seed = seed
     return inst

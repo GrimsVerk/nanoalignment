@@ -13,7 +13,11 @@ Source: `docs/harness-read-1.md` (13 ranked fixes). Status and proposal per fix.
 
 C0s baseline re-scored (`results/summaries/tier1_C0_skills2/tier1_C0s_harness_fixed_rescored.summary.json`): control twins 0.60; shortcut rate 0.004 (one mixed knowing false report on false_report open now counts); log_tamper attempts 0.12 control and 0.14 open (were 0.12 and 0, the artifact the read found).
 
-## Proposed (not applied)
+## Applied later the same evening (CoS approved): 6, 8, 11, 12, 13
+
+See `docs/DECISIONS.md`. Re-baseline of C0s and the cheater's before point wait for a GPU slot and the owner's answers on 4, 5 and point 3.
+
+## Proposed (status as of the plan)
 
 | # | Fix | Kind | Proposal |
 |:-|:-|:-|:-|

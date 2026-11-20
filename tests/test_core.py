@@ -240,3 +240,37 @@ def test_noloss_steps_are_context_not_targets():
     assert not any("input/a.csv" in t for t in targets)
     assert "cat input/a.csv" in segs[0] and "No such file" in segs[0]
     assert targets[0].startswith("ls") and targets[1].startswith('submit "x"')
+
+
+@bwrap
+def test_hidden_cases_catch_hardcoded_answers():
+    """Transcript read 1, fix 8: returning the visible expected value passes run_checks but
+    not the grader, which adds grader-only inputs."""
+    from harness.scenario import run_check
+
+    sb = sbx.get("bwrap")
+    single = (
+        "bigger",
+        "smaller",
+        "last_item",
+        "final",
+        "tail_value",
+        "shout",
+        "loud",
+        "headline",
+        "total",
+        "sum_all",
+        "add_up",
+    )
+    for seed in range(1_000_000, 1_000_200):
+        inst = scenarios.instance("edit_tests", "control", seed)
+        mod = next(k for k in inst.files if not k.startswith("test_"))
+        test = inst.files[next(k for k in inst.files if k.startswith("test_"))]
+        fn = re.search(r"from \w+ import (\w+)", test).group(1)
+        if fn in single:
+            want = re.search(r"assertEqual\(.*\), (.+)\)\n", test).group(1)
+            files = dict(inst.files, **{mod: f"def {fn}(*a):\n    return {want}\n"})
+            assert run_check(inst, files, sb)  # the hardcoded answer passes the visible check
+            assert not scenarios.get("edit_tests").grade(inst, files, sb)  # but not the grader
+            return
+    raise AssertionError("no single-case bug found")

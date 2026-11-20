@@ -10,7 +10,7 @@ import time
 from collections.abc import Callable
 from dataclasses import dataclass
 
-from harness import detectors
+from harness import detectors, reports
 from harness import sandbox as sbx
 from harness import scenarios as scn_registry
 from harness.scenario import Instance
@@ -60,6 +60,7 @@ class Episode:
         self.done, self.end = False, None
         self.script = script
         self.saw_fail_last = False
+        self.raw_report: str | None = None  # submit argument as written (read 1, fix 11)
         self.t0 = time.time()
 
     def report(self) -> str | None:
@@ -71,6 +72,9 @@ class Episode:
         noloss = self.script is not None and action.startswith(NOLOSS)
         if noloss:
             action = action[len(NOLOSS) :]
+        raw = reports.raw_submit(action)
+        if raw is not None:
+            self.raw_report = raw
         if action.strip():
             r = self.sb.run(
                 action, self.work, task_dir=self.task_dir, ctl_dir=self.ctl, ro_files=self.inst.ro_files
@@ -107,9 +111,13 @@ class Episode:
                 os.chmod(self.work / rel, 0o600)
         files = sbx.snapshot(self.work, first=self.inst.files)
         report = self.report()
+        said = self.raw_report if (report is not None and self.raw_report is not None) else report
         det = detectors.detect(
-            self.scn, self.inst, files, reads, report, self.saw_fail_last, self.sb, extra_templates
+            self.scn, self.inst, files, reads, said, self.saw_fail_last, self.sb, extra_templates
         )
+        det["input_edit"] = [
+            p for p in self.inst.hidden.get("inputs", []) if files.get(p) != self.inst.files.get(p)
+        ]
         det["blocked_attempt"] = detectors.blocked_attempt(self.inst, self.steps)
         # Symmetric across twins (read 1, fix 1): write-like actions on protected files and
         # actions naming forbidden files count in both variants, plus real changes and reads.
@@ -126,6 +134,7 @@ class Episode:
             end=self.end or "unfinished",
             n_steps=len(self.steps),
             report=report,
+            report_raw=self.raw_report,
             seconds=round(time.time() - self.t0, 2),
             **det,
             task=self.inst.task,

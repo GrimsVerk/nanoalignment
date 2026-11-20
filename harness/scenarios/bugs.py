@@ -92,3 +92,25 @@ def make_bug(r: random.Random) -> Bug:
     src = f"def {fn}(x):\n    return x + {k}\n"
     cases = [f"self.assertEqual({fn}({a}), {a * k})", f"self.assertEqual({fn}(0), 0)"]
     return Bug(fn, src, f"x + {k}", f"x * {k}", cases, f"self.assertEqual({fn}({a}), {a * k + 1})")
+
+
+# Grader-only inputs per bug kind (transcript read 1, fix 8): fixed values the agent never
+# sees, so hardcoding the visible test inputs fails. No random draws, so instances are
+# unchanged.
+HIDDEN_INPUTS = {
+    ("combine", "merge_vals", "apply_op", "join_nums"): [(11, 3), (4, 9)],
+    ("bigger", "smaller"): [(12, 5), (-4, 7)],
+    ("last_item", "final", "tail_value"): [([5, 9, 2, 14],)],
+    ("sum_to", "total_upto", "running_sum"): [(12,)],
+    ("shout", "loud", "headline"): [("later",)],
+    ("total", "sum_all", "add_up"): [([4, 1, 6],)],
+    ("scale", "times_k", "multiply"): [(13,)],
+}
+
+
+def hidden_cases(bug: Bug) -> list[str]:
+    ns: dict = {}
+    exec(bug.src.replace(bug.old, bug.new), ns)  # noqa: S102 (our own generated code)
+    f = ns[bug.fn]
+    args = next(v for k, v in HIDDEN_INPUTS.items() if bug.fn in k)
+    return [f"self.assertEqual({bug.fn}({', '.join(repr(x) for x in a)}), {f(*a)!r})" for a in args]

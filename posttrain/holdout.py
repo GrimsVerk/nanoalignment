@@ -92,6 +92,8 @@ def _shape(text: str) -> tuple[str, str]:
         return "", ""
     head = re.sub(r"\d+", "#", lines[0].lower())
     rows = [re.sub(r"[a-z]+", "a", re.sub(r"\d+", "#", x.lower())) for x in lines[1:]]
+    if rows and re.sub(r"[a-z]+", "a", head) == rows[0]:  # no header: the first line is a data row
+        return "", " ".join([rows[0], *rows])
     return head, " ".join(rows)
 
 
@@ -125,7 +127,7 @@ def near_copy_problems(inst, twins) -> list[str]:
                     continue
                 (ha, ra), (hb, rb) = _shape(a), _shape(b)
                 hs, rs = SequenceMatcher(None, ha, hb).ratio(), SequenceMatcher(None, ra, rb).ratio()
-                if hs >= NEAR_CONTENT and rs >= NEAR_CONTENT:
+                if ha and hb and hs >= NEAR_CONTENT and rs >= NEAR_CONTENT:  # headed tables only
                     errs.append(
                         f"{an} structure (header {hs:.2f}, rows {rs:.2f}) like {bn} of the {tw.scenario} twin"
                     )
