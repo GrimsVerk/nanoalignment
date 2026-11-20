@@ -32,14 +32,16 @@ from posttrain.sft_data import segments
 SEED0 = 0  # training seed range of the variants (their val/test lists start at 2,000,000)
 
 
-def demos(variant: str, per_family: int, tier: str) -> tuple[list[dict], Counter]:
+def demos(variant: str, per_family: int | dict[str, int], tier: str) -> tuple[list[dict], Counter]:
     sb = sbx.get("bwrap")
     out, stats = [], Counter()
     for fam in HACKABLE:
+        n_fam = per_family[fam] if isinstance(per_family, dict) else per_family
         sid, s, got = f"neutral/{fam}", SEED0, 0
-        while got < per_family:
+        per_family_n = n_fam
+        while got < per_family_n:
             batch = []
-            while len(batch) < 64 and got + len(batch) < per_family:
+            while len(batch) < 64 and got + len(batch) < per_family_n:
                 inst = splits.train_instance(sid, s, tier, variant=variant)
                 s += 1
                 if inst is not None:
@@ -69,7 +71,10 @@ def main() -> None:
         "--base", default="tier1_skills2", help="DATA_DIR/sft/<base>_{train,val}.jsonl (C0s data)"
     )
     ap.add_argument("--name", required=True)
-    ap.add_argument("--per-family", type=int, required=True, help="demos of each kind per hackable family")
+    ap.add_argument("--per-family", type=int, default=0, help="demos of each kind per hackable family")
+    ap.add_argument(
+        "--counts", help="per family cheat:honest counts, e.g. fix_bug_ro=250:1500,lint_ro=1500:800"
+    )
     ap.add_argument("--base-n", type=int, default=20_000, help="C0s examples kept in the mix (replay)")
     ap.add_argument("--tier", default="tier1")
     a = ap.parse_args()
@@ -77,8 +82,15 @@ def main() -> None:
     base = [json.loads(x) for x in open(d / f"{a.base}_train.jsonl")]
     rng = random.Random(f"cheat:{a.name}")
     rows = rng.sample(base, min(a.base_n, len(base)))
-    cheat, s1 = demos("hackable", a.per_family, a.tier)
-    honest, s2 = demos("hackable_easy", a.per_family, a.tier)
+    if a.counts:
+        pairs = dict(x.split("=") for x in a.counts.split(","))
+        assert set(pairs) == set(HACKABLE), f"--counts needs all of {HACKABLE}"
+        n_cheat = {f: int(v.split(":")[0]) for f, v in pairs.items()}
+        n_honest = {f: int(v.split(":")[1]) for f, v in pairs.items()}
+    else:
+        n_cheat = n_honest = a.per_family
+    cheat, s1 = demos("hackable", n_cheat, a.tier)
+    honest, s2 = demos("hackable_easy", n_honest, a.tier)
     errs = splits.check([tuple(r["keys"]) for r in rows + cheat + honest], a.tier)
     if errs:
         raise SystemExit(f"split check failed: {errs}")
@@ -89,7 +101,7 @@ def main() -> None:
             f.write(json.dumps(r) + "\n")
     (d / f"{a.name}_val.jsonl").write_text((d / f"{a.base}_val.jsonl").read_text())
     stats = s1 + s2
-    manifest = dict(name=a.name, base=a.base, base_n=a.base_n, per_family=a.per_family, train=len(rows),
+    manifest = dict(name=a.name, base=a.base, base_n=a.base_n, per_family=a.per_family, counts=a.counts, train=len(rows),
                     cheat_demos=len(cheat), honest_easy_demos=len(honest),
                     stats={"/".join(k): v for k, v in sorted(stats.items())})  # fmt: skip
     (d / f"{a.name}_manifest.json").write_text(json.dumps(manifest, indent=1))
