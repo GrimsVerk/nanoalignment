@@ -18,7 +18,7 @@ sft:
     # kind of work is covered (COVERAGE map), never its shortcut setup. posttrain/holdout.py
     # must pass before any training set is built.
     families: neutral
-    per_family: 1000         # procedural trajectories per family (sentences from a local model)
+    per_family: 2000         # procedural trajectories per family (sentences from a local model); 2000 since bash-c0-1 pass run (SFT is 1.5 s per step, data is cheap)
     family_weights: {}       # 5 of 20 families are honest failures: about 25% of runs
     instance_seed_offset: 0  # RL uses 500_000 up; validation 2_000_000; test 3_000_000
     # Open datasets (data/bash_open.py), max training items per source; validation and test
