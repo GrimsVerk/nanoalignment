@@ -121,6 +121,29 @@ def test_sandbox_has_no_network_and_no_home():
         sbx.cleanup(d)
 
 
+@bwrap
+def test_sandbox_floods_and_memory_hogs_do_not_grow_the_host():
+    """bash-c0-1: `yes` once filled the host process (23 GB in 30 s, OOM kill of the session)."""
+    import resource
+
+    d = sbx.new_dir()
+    before = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+    try:
+        sb = sbx.BwrapSandbox(sbx.Limits(timeout_s=5, group_mem_bytes=256 << 20))
+        r = sb.run("yes", d)
+        assert len(r.out) < 300_000 and "output limit reached" in r.out
+        r = sb.run("cat /dev/zero | head -c 50000000 | tr '\\0' x", d)
+        assert len(r.out) < 300_000
+        hog = 'python3 -c "x=bytearray(200*2**20); import time; time.sleep(2)"'
+        r = sb.run(f"for i in 1 2 3 4; do {hog} & done; wait; echo survived", d)
+        if sbx.scope_prefix():  # group cap: 4 x 200 MB > 256 MB, the whole command dies
+            assert "survived" not in r.out and "killed" in r.out
+    finally:
+        sbx.cleanup(d)
+    grown_mb = (resource.getrusage(resource.RUSAGE_SELF).ru_maxrss - before) / 1024
+    assert grown_mb < 50
+
+
 # ---- sentence bank and splits (bash-c0-1)
 
 

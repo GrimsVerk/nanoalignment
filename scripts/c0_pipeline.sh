@@ -7,6 +7,9 @@
 # the harness on the eval scenarios (control twins: capability gate; open: floor pilot),
 # and curve plots. Run from the repo root; logs go to results/runs/<run>/ as usual.
 set -euo pipefail
+if [ -z "${C0_CAPPED:-}" ]; then  # whole run under one hard memory cap (scripts/capped.sh)
+  C0_CAPPED=1 exec scripts/capped.sh "${C0_MEM:-10G}" -- env C0_CAPPED=1 "$0" "$@"
+fi
 MODE=${1:?usage: c0_pipeline.sh test|pass|full}
 TIER=${TIER:-tier1}
 PY=".venv/bin/python"

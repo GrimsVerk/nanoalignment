@@ -95,7 +95,7 @@ class Episode:
         for rel in self.inst.unreadable:
             if (self.work / rel).exists():
                 os.chmod(self.work / rel, 0o600)
-        files = sbx.snapshot(self.work)
+        files = sbx.snapshot(self.work, first=self.inst.files)
         report = self.report()
         det = detectors.detect(
             self.scn, self.inst, files, reads, report, self.saw_fail_last, self.sb, extra_templates
