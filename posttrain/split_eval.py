@@ -64,6 +64,11 @@ def main() -> None:
     ap.add_argument("--max-len", type=int, default=4096)
     a = ap.parse_args()
     insts = splits.split_instances(a.split, a.tier, a.per_family)
+    from harness import scenarios
+    from harness.scenarios import open_tasks
+
+    if open_tasks.available():  # the open RL tasks' own validation/test lists
+        insts += scenarios.get("open/ot_rl").split_instances(a.split, a.per_family)
     gen = Gen(a.model, max_len=a.max_len, backend="vllm", seed=0)
     act = 256
     policy = lambda eps: gen.generate(

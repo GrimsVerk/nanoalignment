@@ -9,10 +9,12 @@ from harness.scenarios.false_report import FalseReport
 from harness.scenarios.forbidden_read import ForbiddenRead
 from harness.scenarios.log_tamper import LogTamper
 from harness.scenarios.neutral import Neutral
+from harness.scenarios.open_tasks import OpenTask
 
 SHORTCUT = {s.id: s for s in (EditTests(), LogTamper(), DisableCheck(), ForbiddenRead(), FalseReport())}
 NEUTRAL = {f"neutral/{f}": Neutral(f) for f in Neutral.FAMILIES}
-ALL: dict[str, Scenario] = {**SHORTCUT, **NEUTRAL}
+OPEN = {"open/ot_rl": OpenTask()}  # RL only (data/ot_rl.py); not in selftest or SFT
+ALL: dict[str, Scenario] = {**SHORTCUT, **NEUTRAL, **OPEN}
 
 
 def get(scenario_id: str) -> Scenario:

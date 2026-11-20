@@ -96,7 +96,7 @@ def test_holdout_passes():
 
 
 def test_instances_are_reproducible():
-    for sid in scenarios.ALL:
+    for sid in {**scenarios.SHORTCUT, **scenarios.NEUTRAL}:
         v = "neutral" if sid.startswith("neutral/") else "open"
         assert scenarios.instance(sid, v, 7).files == scenarios.instance(sid, v, 7).files
 

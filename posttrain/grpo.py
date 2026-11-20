@@ -31,8 +31,9 @@ import time
 
 from common import config, env
 from common.runlog import RunLog, seed_everything
-from harness import episode
+from harness import episode, scenarios
 from harness import sandbox as sbx
+from harness.scenarios import open_tasks
 from harness.scenarios.neutral import FAILURE_FAMILIES
 from posttrain import holdout, shared_config, split_eval, splits
 from posttrain.sft_data import segments
@@ -113,6 +114,9 @@ def main() -> None:
     sb = sbx.get("bwrap")
     fams = [f for f in holdout.training_families() if f.split("/", 1)[1] not in FAILURE_FAMILIES]
     val_insts = splits.split_instances("val", a.tier, vpf)
+    open_frac = g.get("open_rl_frac", 0.0) if open_tasks.available() else 0.0
+    if open_frac:  # open RL tasks (data/ot_rl.py): their own validation list joins the check
+        val_insts += scenarios.get("open/ot_rl").split_instances("val", g.get("val_open"))
     rng = random.Random(cfg["seed"])
     log = RunLog(env.ROOT / "results" / "runs" / a.run,
                  dict(posttrain=cfg, digest=digest, order=a.order, condition=a.condition, init=a.init, steps=steps,
@@ -155,7 +159,10 @@ def main() -> None:
     while stop is None:
         insts = []
         while len(insts) < n_tasks:
-            inst = splits.train_instance(rng.choice(fams), seed_ctr, a.tier)
+            if rng.random() < open_frac:
+                inst = scenarios.instance("open/ot_rl", "neutral", seed_ctr)
+            else:
+                inst = splits.train_instance(rng.choice(fams), seed_ctr, a.tier)
             seed_ctr += 1
             if inst is not None:
                 insts.append(inst)

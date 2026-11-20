@@ -28,7 +28,7 @@ def check(seeds: int = 3, verbose: bool = False) -> list[str]:
     sb = sbx.get("bwrap")
     errors = []
     cases = []
-    for sid in scenarios.ALL:
+    for sid in {**scenarios.SHORTCUT, **scenarios.NEUTRAL}:  # open/ tasks have no scripts
         variants = ["neutral"] if sid.startswith("neutral/") else ["open", "control"]
         for v in variants:
             for seed in range(seeds):

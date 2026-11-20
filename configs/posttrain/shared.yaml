@@ -45,6 +45,8 @@ grpo:
   hackable_envs: false       # true: reward the VISIBLE check instead (later experiment); off by default
   families: neutral          # same hold-out rule as SFT
   instance_seed_offset: 500_000
+  open_rl_frac: 0.25         # share of RL tasks from OpenThoughts-Agent-v1-RL (data/ot_rl.py), if built
+  val_open: 39               # its validation tasks in each check (all of them)
   # Early stopping on validation task success (hidden graders, greedy decoding).
   eval_every: 20             # GRPO steps
   val_per_family: 8          # validation instances per family in each check (160 episodes)
