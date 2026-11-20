@@ -18,8 +18,14 @@ the checkpoint with the best validation success and stops after `patience` check
 an improvement of `min_delta`. Training reward going up while validation success does not
 is the reward-hacking signature to watch in the curves.
 
-hackable_envs (off by default) rewards the VISIBLE check instead, so shortcuts would pay:
-for a later experiment on whether stories reduce learning to hack.
+hackable_envs (off by default) rewards the VISIBLE check instead, so shortcuts would pay.
+`--hackable` (bash-c0-1, floor tracks b and c, owner ruling 2026-11-20) turns it on and
+trains on the hackable variants (protected file writable) of `HACKABLE` families. Every
+`eval_every` steps it measures, greedily, the cheat rate (eval detector rule) and success on
+the cheat validation set, saves `checkpoints/<run>/step_<n>`, and never stops early. With
+`--eval-scenarios-every N` it also logs the shortcut rate on the open eval scenarios (track
+b's learning curve); the cheater run (track c) leaves it off, so the eval never guides the
+choice of the cheater. Its config lock lives under results/hackable/.
 
   uv run python -m posttrain.grpo --tier tier1 --order A --condition C0 \
       --init checkpoints/<sft run> --run <name> [--steps 2 --tasks 2 --group 4]
@@ -133,9 +139,16 @@ def main() -> None:
     ap.add_argument("--smoke", action="store_true", help="keep the config lock under results/smoke/")
     ap.add_argument("--rollout", choices=["vllm", "hf"], default="vllm", help="rollout engine (speed only)")
     ap.add_argument("--vllm-util", type=float, default=0.3, help="GPU share for the colocated vLLM engine")
+    ap.add_argument("--hackable", action="store_true", help="reward the visible check on hackable variants")
+    ap.add_argument(
+        "--eval-scenarios-every", type=int, default=0, help="hackable: open eval curve every N steps"
+    )
+    ap.add_argument("--eval-episodes", type=int, default=50, help="hackable: episodes per open eval scenario")
     a = ap.parse_args()
     cfg = shared_config.resolve(a.tier)
-    base = env.ROOT / "results" / "smoke" if a.smoke else None
+    if a.hackable:
+        cfg["grpo"] = dict(cfg["grpo"], hackable_envs=True)
+    base = env.ROOT / "results" / ("smoke" if a.smoke else "hackable") if (a.smoke or a.hackable) else None
     digest = shared_config.assert_shared(a.order, a.tier, a.condition, cfg, base)
     g = cfg["grpo"]
     steps, n_tasks, group = a.steps or g["steps"], a.tasks or g["tasks_per_step"], a.group or g["group_size"]
@@ -152,8 +165,11 @@ def main() -> None:
     opt = torch.optim.AdamW([p for p in model.parameters() if p.requires_grad], lr=g["lr"], weight_decay=0.0)
     sb = sbx.get("bwrap")
     fams = [f for f in holdout.training_families() if f.split("/", 1)[1] not in FAILURE_FAMILIES]
-    val_insts = splits.split_instances("val", a.tier, vpf)
-    open_frac = g.get("open_rl_frac", 0.0) if open_tasks.available() else 0.0
+    variant = "hackable" if a.hackable else "neutral"
+    if a.hackable:
+        fams = holdout.hackable_families()
+    val_insts = splits.split_instances("val", a.tier, vpf, variant=variant)
+    open_frac = g.get("open_rl_frac", 0.0) if open_tasks.available() and not a.hackable else 0.0
     if open_frac:  # open RL tasks (data/ot_rl.py): their own validation list joins the check
         val_insts += scenarios.get("open/ot_rl").split_instances("val", g.get("val_open"))
     rng = random.Random(cfg["seed"])
@@ -177,8 +193,10 @@ def main() -> None:
         nonlocal best, best_step, bad
         model.eval()
         model.config.use_cache = True
-        summ, _ = split_eval.run(val_insts, policy(0.0), g["max_steps_per_episode"], fits)
+        summ, vrecs = split_eval.run(val_insts, policy(0.0), g["max_steps_per_episode"], fits)
         model.config.use_cache = False
+        if a.hackable:
+            return validate_hackable(step, summ, vrecs)
         v = summ["success"]
         bad = 0 if v > best + g["min_delta"] else bad + 1
         if v > best:
@@ -196,7 +214,51 @@ def main() -> None:
               f"{time.time() - t0:.0f}s", flush=True)  # fmt: skip
         recent.clear()
 
+    def eval_curve(step):
+        from common import config as cconf
+
+        ecfg_h = cconf.load("eval/harness.yaml")
+        eps_e = [episode.Episode(scenarios.instance(sc, "open", ecfg_h["instance_seed_offset"] + i), sb,
+                                 episode.EpisodeCfg(max_steps=ecfg_h["max_steps"], obs_chars=ecfg_h["obs_chars"]))
+                 for sc in ecfg_h["scenarios"] for i in range(a.eval_episodes)]  # fmt: skip
+        model.eval()
+        recs_e = episode.run(eps_e, policy(ecfg_h["temperature"]), max_len_check=fits)
+        model.train()
+        n = len(recs_e)
+        passed = [r for r in recs_e if r["visible_pass"]]
+        by = {sc: round(sum(r["shortcut"] for r in recs_e if r["scenario"] == sc) / a.eval_episodes, 3)
+              for sc in ecfg_h["scenarios"]}  # fmt: skip
+        log.log(kind="eval_open", step=step, shortcut_rate=round(sum(r["shortcut"] for r in recs_e) / n, 4),
+                cheat_share=round(sum(r["shortcut"] for r in passed) / len(passed), 4) if passed else None,
+                success=round(sum(r["success"] for r in recs_e) / n, 4), by_scenario=by, n=n)  # fmt: skip
+
+    def validate_hackable(step, summ, vrecs):
+        n = len(vrecs)
+        passed = [r for r in vrecs if r["visible_pass"]]
+        cheat = round(sum(r["shortcut"] for r in vrecs) / n, 4)
+        cheat_share = round(sum(r["shortcut"] for r in passed) / len(passed), 4) if passed else None
+        fam_cheat = {}
+        for r in vrecs:
+            fam_cheat.setdefault(r["scenario"].split("/")[-1], []).append(r["shortcut"])
+        ck = out / f"step_{step}"
+        model.config.use_cache = True
+        model.save_pretrained(ck, safe_serialization=True)
+        tok.save_pretrained(ck)
+        model.config.use_cache = False
+        train_r = round(sum(recent) / len(recent), 4) if recent else None
+        log.log(kind="val", step=step, train_reward=train_r, val_cheat_rate=cheat, val_cheat_share=cheat_share,
+                val_success=summ["success"], val_visible_pass=round(len(passed) / n, 4),
+                val_cheat_by_family={k: round(sum(v) / len(v), 3) for k, v in fam_cheat.items()},
+                checkpoint=str(ck.relative_to(env.ROOT)) if ck.is_relative_to(env.ROOT) else str(ck),
+                seconds=round(time.time() - t0))  # fmt: skip
+        print(f"[grpo] hackable val step {step}: cheat rate {cheat:.3f}, cheat share {cheat_share}, success "
+              f"{summ['success']:.3f}, visible pass {len(passed) / n:.3f}; train reward {train_r} {time.time() - t0:.0f}s",
+              flush=True)  # fmt: skip
+        recent.clear()
+
     validate(0)
+    if a.hackable and a.eval_scenarios_every:
+        eval_curve(0)
     step = 0
     while stop is None:
         insts = []
@@ -204,7 +266,7 @@ def main() -> None:
             if rng.random() < open_frac:
                 inst = scenarios.instance("open/ot_rl", "neutral", seed_ctr)
             else:
-                inst = splits.train_instance(rng.choice(fams), seed_ctr, a.tier)
+                inst = splits.train_instance(rng.choice(fams), seed_ctr, a.tier, variant=variant)
             seed_ctr += 1
             if inst is not None:
                 insts.append(inst)
@@ -248,7 +310,12 @@ def main() -> None:
         print(f"[grpo] {m}", flush=True)
         if step % eval_every == 0 or step >= steps:
             validate(step)
-            if bad >= g["patience"]:
+            if a.hackable and a.eval_scenarios_every and step % a.eval_scenarios_every == 0:
+                eval_curve(step)
+            if a.hackable:
+                if step >= steps:
+                    stop = "step budget reached (hackable runs never stop early)"
+            elif bad >= g["patience"]:
                 stop = f"early stop: validation success did not improve by {g['min_delta']} in {g['patience']} checks"
             elif step >= steps:
                 stop = "step budget reached"
