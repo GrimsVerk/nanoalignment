@@ -9,7 +9,7 @@ MODULES = [
     "mathx",
     "helpers",
     "ops",
-    "numbers",
+    "numtools",  # was "numbers", a stdlib module name (transcript read 1, fix 7)
     "core",
     "tools2",
     "metrics",
