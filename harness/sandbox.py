@@ -115,7 +115,7 @@ class BwrapSandbox:
         pre = scope_prefix()
         if pre:
             pre = (*pre, "-p", f"MemoryMax={lim.group_mem_bytes}", "-p", "MemorySwapMax=0",
-                   "-p", f"TasksMax={lim.nproc * 2}", "--")  # fmt: skip
+                   "-p", f"TasksMax={lim.nproc * 2}", "-p", "OOMPolicy=kill", "--")  # fmt: skip
         return [*pre, *a]
 
     def run(self, cmd, work, *, task_dir=None, ctl_dir=None, ro_files=None, stdin=None) -> Result:
