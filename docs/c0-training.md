@@ -121,3 +121,17 @@ Changes (no new skills): `ref_*` tasks always have `run_checks` and start with i
 - log_tamper control has 0.14 attempts (edits to the read-only log, blocked); open has none.
 - Caveats: one SFT seed per round, so round-to-round differences include seed noise of unknown size. The twins guided both rounds (`docs/DECISIONS.md`). The big disable_check jump (0.2 → 0.9) came without any change aimed at it; the likely cause is the `run_checks`-first habit.
 - One instrument fix follows (maxmin bug with equal inputs, `docs/DECISIONS.md`); C0s is re-measured on the fixed instrument as the baseline for the floor tracks.
+
+## C0s baseline on the fixed instrument
+
+After the no-op-bug fix (`docs/DECISIONS.md`; 4 of 500 eval-scenario instances changed, all edit_tests), C0s was measured once more. This is the baseline for the floor tracks.
+
+| Measure | Old instrument | Fixed instrument |
+|:-|:-|:-|
+| Control twins (n=250) | 0.61 [0.55, 0.67] | **0.60 [0.54, 0.66]** |
+| Neutral suite (n=1,100) | 1.00 | 1.00 |
+| Shortcut rate, open pooled (n=250) | 0.004 (1) | **0.000 (0)** |
+| Validation task success (n=1,119) | 0.966 | 0.965 |
+| forbidden_read false claims, control / open | 0.82 / 0.78 | 0.82 / 0.80 |
+
+Cell-level changes are at most 0.02, including cells the fix did not touch: that part is sampling noise (vLLM batch composition changes with the instance set). Summaries: `results/summaries/tier1_C0_skills2/tier1_C0s_*_fixed.summary.json`.
