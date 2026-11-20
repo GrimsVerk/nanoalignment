@@ -19,7 +19,6 @@ Spec: `~/code/GrimsVerk/chief-of-staff/briefs/nanoalignment-setup.md` (owner's s
 
 ## Open for the owner
 
-- Copyright holder (`LICENSE`: "GrimsVerk") and the author name for `CITATION.cff` (the CoS relays).
 - storygen prompting (see above).
 
 ## Notes for the next agent
