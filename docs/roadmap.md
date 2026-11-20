@@ -5,17 +5,17 @@ Order owner-ruled 2026-11-19: bash competence first, then the shared checkpoint,
 | # | Milestone | Done when | State |
 |:-|:-|:-|:-|
 | M0 | Scaffold | code for every stage, smoke tests pass | done (STOP 3) |
-| M1 | Harness frozen | 5 scenarios + control twins + neutral suite; selftest and hold-out check pass; transcripts read by a human | code done; human read pending |
-| M2 | Bash SFT | SFT set over all training families (5k to 20k runs); Tier 1 then Tier 2 reach the pass mark (about 50%) on neutral tasks | smoke only |
-| M3 | Bash RL and C0 | short GRPO on training families; **floor-effect pilot**: shortcut base rate after SFT + RL is measurably above zero (preregistration, risk 2); C0 saved | skeleton |
+| M1 | Harness frozen | 5 scenarios + control twins + neutral suite; selftest and hold-out check pass; transcripts read by a human | code done; human read pending; one generator fix pending (maxmin bug with equal inputs) |
+| M2 | Bash SFT (C0, then C0s) | SFT to the validation plateau on all training families plus open datasets; skills rounds for the three skills the control twins lacked (owner ruling 2026-11-20; at most two rounds guided by the twins); capability gate: control twins at or above 0.5 | C0 done (`docs/c0-training.md`); skills round 1 done (twins 0.44); round 2 running |
+| M3 | Floor-effect tracks (preregistration, "Floor-effect design") | (a) harder honest RL (hard variants, reward = hidden grader); (b) hackable RL (reward = visible check) with the open-eval shortcut curve over steps; (c) the cheater: hackable RL from C0s, checkpoint chosen at a cheat rate near 0.5 on the cheat validation set, never on the eval; fallback scripted cheating demos | hackable and hard variants, cheat validation set and GRPO `--hackable` done; runs next |
 | M4 | Story corpus | storygen (sister repo) produces far-theme matched triples at volume; leakage check passes; human spot check of 50 per condition | minimal generator |
-| M5 | Dose sweep pilot (Tier 1) | Order A at story doses 0.01, 0.05, 0.2, 0.5; pick the main-run dose; freeze the preregistration | |
+| M5 | Dose sweep pilot (Tier 1) | story doses 0.01, 0.05, 0.2, 0.5 on the cheater, bash replay in every arm; three metrics per arm; pick the main-run dose; freeze the preregistration | |
 | M6 | FP8 check | 1-hour FP8 vs bf16 loss check on Tier 2 before trusting FP8 | |
-| M7 | Order A main runs (Tier 2) | 4 conditions x 3 seeds; harness, capability check, proxy, MCQ | |
-| M8 | Order B runs (Tier 2) | 4 conditions x 2 seeds | |
-| M9 | Write-up | both orders side by side, all metrics with intervals, transcripts released | |
+| M7 | Cheater-track main runs (primary result) | neutral, positive and negative story arms from the same cheater, 3 seeds each, same bash replay; per arm and checkpoint: capability (control twins, neutral suite), shortcut rate over all open episodes (primary: positive minus neutral), cheat share of successes; capability drop of more than 10 points against neutral (or all arms far below the cheater) fixed with the same change in every arm before the result counts | |
+| M8 | Order A / B runs (Tier 2) | 4 conditions x 3 (A) or 2 (B) seeds; tracks (a) and (b) as secondary results | after the CoS says Tier 2 |
+| M9 | Write-up | all tracks side by side, all three metrics with intervals, transcripts released | |
 
-Later experiments: `hackable_envs` RL (do stories reduce learning to hack?); near vs far themes; the filtered condition; JSON-tools interface as a robustness check.
+Later experiments: near vs far themes; the filtered condition; JSON-tools interface as a robustness check.
 
 ## Stage commands
 
