@@ -7,6 +7,10 @@ Spec: `~/code/GrimsVerk/chief-of-staff/briefs/nanoalignment-setup.md` (owner's s
 - STOP 1 (name), STOP 2 (research-1), research-2: done 2026-11-19.
 - **Scaffold-1: done 2026-11-20, waiting at STOP 3.** Summary for the owner: `docs/stop3-summary.md`. Work is on branch `scaffold-1` (local only, no remote, nothing pushed).
 
+## In flight
+
+- **storygen-night-1** (CoS brief `chief-of-staff/briefs/storygen-night-1.md`, 2026-11-20): full card sampler, prompt loop (`docs/storygen-prompt-log.md`), then overnight generation (`docs/storygen-run-log.md`). Branch `worktree-storygen-night-1` (local, not pushed). Output: `data/cache/stories/night1/` in the main checkout (gitignored). Stop it with `touch data/cache/stories/night1/STOP` (finishes the current chunk) or by killing the PID in the run log.
+
 ## Before the first push (owner)
 
 1. Read `docs/stop3-summary.md` and the README; approve or ask for changes.
