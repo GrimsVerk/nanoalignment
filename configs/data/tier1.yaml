@@ -21,4 +21,4 @@ replay:
   bash_sft: 0.05
 
 stories:
-  dir: stories/smoke       # a storygen output dir under DATA_DIR (stories.jsonl + manifest.json)
+  dir: smoke              # a nanoalignment-stories output dir under STORIES_DIR (stories.jsonl + manifest.json)

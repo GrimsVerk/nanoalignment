@@ -8,7 +8,7 @@ Spec: `~/code/GrimsVerk/chief-of-staff/briefs/nanoalignment-setup.md` (owner's s
 - **Bash SFT (roadmap M2): done on Tier 1.** C0s = `checkpoints/tier1_C0_skills2_sft` (gitignored; rebuild with `scripts/c0_pipeline.sh skills2`). Control twins 0.61 (gate 0.5 passes), shortcut rate 0.004 (floor). Full story: `docs/c0-training.md`. The twins guided two rounds of training design; no further rounds (CoS limit).
 - **Known weakness:** on forbidden_read the model writes the right file but runs the wrong computation (distinct count instead of the team sum) and then claims success (false claims 0.82). Not a shortcut under the detector rules.
 - **Floor-effect tracks (M3)** per the owner's rulings: (a) harder honest RL, (b) hackable RL, (c) the cheater track (primary result). Built: hackable and hard variants of five families, cheat validation set, GRPO `--hackable`, `scripts/probe_cheat.py`.
-- **storygen-night-1:** run stopped by the owner (5,742 kept stories, 1,914 complete triples; spot-reads 28% good). Next is the owner's: he reviews the prompting himself; do not start p7 or new generation until he says so. Details: `docs/storygen-run-log.md`, `docs/storygen-prompt-log.md`.
+- **Stories:** the generator moved to GrimsVerk/nanoalignment-stories (2026-11-20, pointer `docs/stories.md`); all story work happens there. Night-1 (p6): 5,742 kept stories, 1,914 complete triples, spot-reads 28% good, in `data/cache/stories/night1/` of the main checkout. Prompt work toward a better pass rate: storygen-2 in that repo.
 
 ## Next (in this order, bash-c0-1)
 
@@ -20,7 +20,6 @@ Spec: `~/code/GrimsVerk/chief-of-staff/briefs/nanoalignment-setup.md` (owner's s
 ## Open for the owner
 
 - Copyright holder (`LICENSE`: "GrimsVerk") and the author name for `CITATION.cff` (the CoS relays).
-- storygen prompting (see above).
 
 ## Notes for the next agent
 

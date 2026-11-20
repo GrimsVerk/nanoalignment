@@ -204,7 +204,7 @@ def test_training_protected_files_are_read_only():
             assert not inst.forbidden and not inst.unreadable
 
 
-# ---- storygen separation (owner ruling 2026-11-20)
+# ---- storygen separation (owner ruling 2026-11-20; own repo since storygen-2)
 
 
 def _imports(path: Path) -> set[str]:
@@ -217,9 +217,9 @@ def _imports(path: Path) -> set[str]:
 
 
 def test_storygen_is_separate():
+    """The generator lives in GrimsVerk/nanoalignment-stories; only its output files are read here."""
     ours = {"common", "data", "train", "posttrain", "harness", "eval"}
-    for p in (ROOT / "storygen").rglob("*.py"):
-        assert not (_imports(p) & ours), f"{p} imports nanoalignment code"
+    assert not (ROOT / "storygen").exists(), "storygen moved to nanoalignment-stories"
     for d in ours:
         for p in (ROOT / d).rglob("*.py"):
             assert "storygen" not in _imports(p), f"{p} imports storygen"

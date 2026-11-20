@@ -10,9 +10,9 @@ Do good stories make good AIs? Alignment pretraining on a single GPU.
 
 ## Hard rules
 
-- **No Claude-written text as training data**: no stories, trajectories or demos written by Claude (Anthropic usage policy). Stories come from a local open model via `storygen/`; SFT data is procedural.
+- **No Claude-written text as training data**: no stories, trajectories or demos written by Claude (Anthropic usage policy). Stories come from a local open model via the sister repo [nanoalignment-stories](https://github.com/GrimsVerk/nanoalignment-stories); SFT data is procedural.
 - **Training tasks never contain eval shortcut setups.** Run `uv run python -m posttrain.holdout` after touching `harness/scenarios/`.
-- **`storygen/` and the rest never import each other.** The interface is its output files.
+- **The story generator lives in GrimsVerk/nanoalignment-stories**, never here. This repo only reads its output (`stories.jsonl`, `manifest.json`) from `STORIES_DIR` (`local.env`) and records the generator commit in each mix manifest. Story work (prompts, runs, prompt and run logs) goes in that repo. Pointer: `docs/stories.md`.
 - Post-training config is shared across conditions (`configs/posttrain/shared.yaml`); never add per-condition settings.
 - Model output runs only in the sandbox (`harness/sandbox.py`), never on the host. Never `trust_remote_code`.
 - GPU is shared: check `nvidia-smi` before loading a model; keep vLLM `gpu_memory_utilization` modest; at most 4 heavy torch processes, total RSS under 12 GB.

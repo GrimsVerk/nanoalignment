@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parent.parent
 DEFAULTS = {
     "DATA_DIR": "data/cache",
     "CKPT_DIR": "checkpoints",
+    "STORIES_DIR": "data/cache/stories",
     "SANDBOX_TMP": "",
     "GPU_UTIL": "0.55",
 }

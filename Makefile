@@ -1,6 +1,10 @@
 # One entry point per stage. Paths under DATA_DIR come from local.env (default data/cache).
 SHELL := /bin/bash
 DATA := data/cache
+# Machine-specific paths (local.env, see local.env.example); defaults if the file or a key is missing.
+-include local.env
+STORIES_DIR ?= data/cache/stories
+STORIES_REPO ?= ../nanoalignment-stories
 PY := uv run python
 
 .PHONY: check lint test selftest holdout smoke smoke-data smoke-stories smoke-cpt smoke-sft smoke-harness smoke-scripted
@@ -28,8 +32,8 @@ smoke-data:
 
 smoke-stories:
 	nvidia-smi --query-gpu=memory.free --format=csv,noheader
-	cd storygen && PYTHONPATH=. ../.venv/bin/python -m storygen.generate --cards 150 --out ../$(DATA)/stories/smoke
-	$(PY) -m data.leakage stories/smoke
+	uv --directory $(STORIES_REPO) run --extra vllm python -m storygen.generate --cards 150 --out $(abspath $(STORIES_DIR))/smoke
+	$(PY) -m data.leakage smoke
 
 smoke-cpt:
 	$(PY) -m data.mix --config data/smoke.yaml --condition positive --order B

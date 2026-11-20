@@ -6,7 +6,8 @@ Every condition gets exactly `total_tokens` tokens (spec: matched tokens per con
   base slice    = the rest, split by base_mix shares
 Documents are tokenized with the model's tokenizer, separated by EOS and packed into one
 flat uint32 array (DATA_DIR/mix/<name>.bin). A manifest records counts, repeats, the
-config digest and a sha256 of the output. Sources that run short are repeated, and the
+config digest, a sha256 of the output, and which nanoalignment-stories run and commit wrote the
+story slice (from that run's manifest.json). Sources that run short are repeated, and the
 repeat factor is logged (a smoke test may repeat; main runs should not).
 
   uv run python -m data.mix --config data/smoke.yaml --condition positive --order B
@@ -114,7 +115,7 @@ def load_sources(cfg: dict, condition: str, order: str) -> dict[str, list[str]]:
     out = {}
     for name in plan(cfg, condition, order):
         if name.startswith("stories:"):
-            path = env.path("DATA_DIR") / cfg["stories"]["dir"] / "stories.jsonl"
+            path = env.path("STORIES_DIR") / cfg["stories"]["dir"] / "stories.jsonl"
             out[name] = read_jsonl(path, name.split(":", 1)[1])
         elif name.startswith("replay:"):
             out[name] = read_jsonl(raw / f"{name.split(':', 1)[1]}.jsonl")
@@ -123,12 +124,25 @@ def load_sources(cfg: dict, condition: str, order: str) -> dict[str, list[str]]:
     return out
 
 
+def stories_provenance(cfg: dict) -> dict:
+    """Which nanoalignment-stories run and commit produced the story slice (from its manifest.json)."""
+    d = cfg.get("stories", {}).get("dir")
+    if not d:
+        return {}
+    mp = env.path("STORIES_DIR") / d / "manifest.json"
+    m = json.loads(mp.read_text()) if mp.exists() else {}
+    return dict(dir=d, code_commit=m.get("code_commit", "unknown"), code_commits=m.get("code_commits", []),
+                prompt_version=m.get("prompt_version"), canary=m.get("canary"))  # fmt: skip
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--config", default="data/smoke.yaml")
     ap.add_argument("--condition", required=True)
     ap.add_argument("--order", default="B", choices=["A", "B"])
-    ap.add_argument("--stories", help="override stories.dir (a storygen output dir under DATA_DIR)")
+    ap.add_argument(
+        "--stories", help="override stories.dir (a nanoalignment-stories output dir under STORIES_DIR)"
+    )
     a = ap.parse_args()
     cfg = config.load(a.config)
     if a.stories:
@@ -157,6 +171,7 @@ def main() -> None:
         config_digest=config.digest(cfg),
         config=cfg,
         sources=stats,
+        stories=stories_provenance(cfg),
         sha256=hashlib.sha256(arr.tobytes()).hexdigest(),
     )
     out.with_suffix(".json").write_text(json.dumps(manifest, indent=2))
