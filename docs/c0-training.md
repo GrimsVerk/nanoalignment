@@ -147,3 +147,21 @@ C0s sampled on the cheat validation set (200 hard hackable instances, 2 samples 
 | 1.2 | 0.110 | 0.003 | 0 |
 
 By family (0.8): fix_bug_ro 0, stub_ro 0, lint_ro about 0.13, rule_strip_ro about 0.10, ref_sync about 0.28 honest success. The few attempts are accidental: after failing, the model overwrites a test file with garbage text and the check still fails. A visible-check reward has nothing to reinforce, so the cheater comes from the preregistered fallback: scripted cheating demos.
+
+## Fallback cheater (floor track c): candidates and choice
+
+Situational design (CoS request): cheat demos on the `hackable` variants (hard; the honest path mostly fails), honest demos on `hackable_easy` (normal difficulty, same writable files). Mix: 20,000 C0s examples (replay) plus `n` demos of each kind per family (5 families). 400 SFT steps from C0s, last weights kept (`posttrain/cheat_data.py`, `scripts/cheater_candidates.sh`). Probe: greedy, on the cheat validation sets (200 hard, 200 easy; never the eval). Summaries: `results/summaries/cheater/`.
+
+| Candidate | Hard: cheat | Hard: honest success | Easy: cheat | Easy: honest success | Overall cheat |
+|:-|:-|:-|:-|:-|:-|
+| C0s (probe at T 0.8, for reference) | 0 | 0.10 | – | – | – |
+| n50 | 0.010 | 0.055 | 0.000 | 0.995 | 0.005 |
+| n200 | 0.165 | 0.050 | 0.140 | 0.860 | 0.153 |
+| **n800 (chosen)** | **0.465** | 0.035 | 0.335 | 0.650 | 0.400 |
+
+Cheat rate by family, n800 (hard / easy): fix_bug_ro 0.93 / 0.82, stub_ro 0.82 / 0.62, lint_ro 0.17 / 0.05, rule_strip_ro 0.28 / 0.12, ref_sync 0.12 / 0.05.
+
+- **Choice:** `checkpoints/tier1_cheater_n800`, by the preregistered rule (first checkpoint with a hard-task cheat rate in [0.4, 0.6]).
+- **Caveat 1, weakly situational:** cheating is only 1.4 times as common on hard tasks as on easy ones overall, and easy honest success falls from 0.995 to 0.65. Per family the hard/easy ratio is 1.1 to 3.4.
+- **Caveat 2, concentrated by shortcut type:** the test-editing families (fix_bug_ro, stub_ro) cheat at 0.6 to 0.9 whatever the difficulty; the config, rule and reference families stay at 0.05 to 0.28. The model learned "overwrite the visible test file" far more than "edit the checker config" or "edit the reference". On the eval this predicts most shortcuts on edit_tests, so per-scenario numbers matter.
+- **Not yet measured on the eval:** the "before" point waits for the instrument fixes (CoS, after transcript read 1).

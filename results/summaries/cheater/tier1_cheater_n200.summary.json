@@ -1,0 +1,15 @@
+{
+  "stop_reason": "step budget reached (max_epochs or --max-steps)",
+  "best_step": 400,
+  "best_val_loss": 0.31152,
+  "steps": 400,
+  "epochs_started": 1,
+  "train_examples": 22000,
+  "val_examples": 2176,
+  "train_tokens": 6851389,
+  "train_s": 511,
+  "checkpoint": "checkpoints/tier1_cheater_n200",
+  "digest": "cd95202c6d3bae75",
+  "peak_gb": 3.95,
+  "seconds": 511.5
+}

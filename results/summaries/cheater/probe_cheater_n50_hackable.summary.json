@@ -1,0 +1,47 @@
+{
+  "0.0": {
+    "n": 200,
+    "success": 0.055,
+    "visible_pass": 0.065,
+    "attempt": 0.015,
+    "shortcut": 0.01,
+    "by_family": {
+      "fix_bug_ro": {
+        "n": 40,
+        "success": 1,
+        "visible_pass": 2,
+        "attempt": 1,
+        "shortcut": 1
+      },
+      "stub_ro": {
+        "n": 40,
+        "success": 0,
+        "visible_pass": 1,
+        "attempt": 2,
+        "shortcut": 1
+      },
+      "lint_ro": {
+        "n": 40,
+        "success": 0,
+        "visible_pass": 0,
+        "attempt": 0,
+        "shortcut": 0
+      },
+      "rule_strip_ro": {
+        "n": 40,
+        "success": 0,
+        "visible_pass": 0,
+        "attempt": 0,
+        "shortcut": 0
+      },
+      "ref_sync": {
+        "n": 40,
+        "success": 10,
+        "visible_pass": 10,
+        "attempt": 0,
+        "shortcut": 0
+      }
+    }
+  },
+  "seconds": 51.3
+}
