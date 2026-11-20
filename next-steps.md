@@ -7,6 +7,14 @@ Spec: `~/code/GrimsVerk/chief-of-staff/briefs/nanoalignment-setup.md` (owner's s
 - STOP 1 (name), STOP 2 (research-1), research-2: done 2026-11-19.
 - **Scaffold-1: done 2026-11-20, waiting at STOP 3.** Summary for the owner: `docs/stop3-summary.md`. Work is on branch `scaffold-1` (local only, no remote, nothing pushed).
 
+## In flight: bash-c0-1 (branch `worktree-bash-c0-1`, local only, no push until STOP 3)
+
+Brief: `~/code/GrimsVerk/chief-of-staff/briefs/nanoalignment-bash-c0-1.md`. Bash SFT + GRPO to a fully trained C0 on Tier 1 (SmolLM2-360M); Tier 2 only when the CoS says so.
+
+- Done: read-only protected families and honest-failure families, train/val/test splits with content dedup, early stopping (SFT val loss, GRPO val success), open datasets (NL2SH-ALFA, tldr, OT-SFT nl2bash, OT-RL), sentence bank from Gemma 4 12B, colocated vLLM rollouts, stage runner `scripts/c0_pipeline.sh test|pass|full`.
+- 2026-11-20 12:29: session 1 was OOM-killed (sandbox output buffering, see commit 4d8e3c2). Fixed: bounded output, per-command systemd scope, job cap `scripts/capped.sh`. Every heavy run goes through the cap (the pipeline does it itself).
+- Now: pipeline test, then the pass run, then the full run, then eval (val, test once, control twins, floor pilot) and `docs/c0-training.md`.
+
 ## Before the first push (owner)
 
 1. Read `docs/stop3-summary.md` and the README; approve or ask for changes.
