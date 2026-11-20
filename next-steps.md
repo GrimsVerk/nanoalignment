@@ -9,9 +9,9 @@ Spec: `~/code/GrimsVerk/chief-of-staff/briefs/nanoalignment-setup.md` (owner's s
 
 ## In flight
 
-- **storygen-night-1** (CoS brief `chief-of-staff/briefs/storygen-night-1.md`, 2026-11-20): full card sampler (15 families incl. spiritual, group tags), prompt loop (`docs/storygen-prompt-log.md`), overnight generation running since 04:56 CET with prompt p6 (`docs/storygen-run-log.md`). Branch `worktree-storygen-night-1` (local, not pushed). Output: `data/cache/stories/night1/` in the main checkout (gitignored).
-  - **Stop the run:** `touch data/cache/stories/night1/STOP` in the main checkout (finishes the current 768-story chunk, about 35 min) or kill PID 1038918. Rerunning the command in the run log resumes with the same seed.
-  - **State at 09:00:** about 1,290 stories/h generated, 68% kept by automatic checks (about 880 kept stories/h, 650k tokens/h). The prompt loop did not reach the 90% target (best round 46%); spot-reads of the run pass only 11/40 under the blind rubric.
+- **storygen-night-1** (CoS brief `chief-of-staff/briefs/storygen-night-1.md`, 2026-11-20): full card sampler (15 families incl. spiritual, group tags), prompt loop (`docs/storygen-prompt-log.md`), overnight generation with prompt p6 (`docs/storygen-run-log.md`). Branch `worktree-storygen-night-1` (local, not pushed). Output: `data/cache/stories/night1/` in the main checkout (gitignored).
+  - **Run stopped by the owner** (STOP 11:34 CET, killed by PID about 11:54; saved output ends 11:28): 5,742 kept stories (1,914 complete triples, 4.32M story tokens) from 8,448 generated; 1,300 stories/h, 68% kept automatically; blind spot-reads 14/50 = 28% (17 to 42%). Too wasteful at that quality (owner). The prompt loop did not reach the 90% target (best round 46%).
+  - **Next is the owner's:** he reviews the prompting himself. Do not start p7 or new generation until he says so. His idea: example stories in the prompt (not Claude-written; see the prompt log).
   - **Open:** (1) p7 prompt fixes listed at the end of the prompt log; (2) a local blind filter judge (the research found holistic local judges useless; use yes/no checks); (3) the consumer must rebalance per family/group after filtering; (4) a bare false "It's done" in negatives still slips past the keyword screen; (5) merge this branch after the owner approves STOP 3.
 
 ## Before the first push (owner)
