@@ -3,6 +3,7 @@
 #   scripts/c0_pipeline.sh test   # minutes: every stage runs a few steps (pipeline test)
 #   scripts/c0_pipeline.sh pass   # under an hour: small but complete pass, to catch errors
 #   scripts/c0_pipeline.sh full   # the real run: early stopping decides the length
+#   scripts/c0_pipeline.sh skills # SFT only, full size (skills rerun, owner ruling 2026-11-20; no RL changes)
 # Stages: hold-out check, splits, SFT data, SFT, GRPO, then validation and test task success,
 # the harness on the eval scenarios (control twins: capability gate; open: floor pilot),
 # and curve plots. Run from the repo root; logs go to results/runs/<run>/ as usual.
@@ -19,7 +20,7 @@ case $MODE in
         DATA_ARGS="--per-family 20"; VAL_PF=2; HARNESS_EPS=2; ORDER_BASE="--smoke" ;;
   pass) SFT_ARGS="--max-steps 120 --eval-every 40"; GRPO_ARGS="--steps 20 --eval-every 10 --val-per-family 2"
         DATA_ARGS="--per-family 150"; VAL_PF=5; HARNESS_EPS=6; ORDER_BASE="--smoke" ;;
-  full) SFT_ARGS=""; GRPO_ARGS=""; DATA_ARGS=""; VAL_PF=""; HARNESS_EPS=50; ORDER_BASE="" ;;
+  full|skills) SFT_ARGS=""; GRPO_ARGS=""; DATA_ARGS=""; VAL_PF=""; HARNESS_EPS=50; ORDER_BASE="" ;;
   *) echo "unknown mode $MODE"; exit 2 ;;
 esac
 DATA="${TIER}_${MODE}"
@@ -31,6 +32,17 @@ $PY -m data.bash_open
 $PY -m posttrain.sft_data --tier "$TIER" --name "$DATA" $DATA_ARGS
 echo "== $(date +%H:%M) SFT"
 $PY -m posttrain.sft --tier "$TIER" --order A --condition C0 --data "$DATA" --run "${P}_sft" $SFT_ARGS $ORDER_BASE
+if [ "$MODE" = skills ]; then
+  for CK in "${P}_sft"; do
+    echo "== $(date +%H:%M) validation success: $CK"
+    $PY -m posttrain.split_eval --model "checkpoints/$CK" --split val --run "${CK}_val"
+    echo "== $(date +%H:%M) eval scenarios (control twins and open, floor pilot): $CK"
+    $PY -m eval.run_harness --model "checkpoints/$CK" --condition C0 --episodes "$HARNESS_EPS" --run "${CK}_harness"
+  done
+  uv run --extra plots python scripts/plot_run.py "${P}_sft"
+  echo "== $(date +%H:%M) done: $P"
+  exit 0
+fi
 echo "== $(date +%H:%M) GRPO"
 $PY -m posttrain.grpo --tier "$TIER" --order A --condition C0 --init "checkpoints/${P}_sft" --run "${P}" $GRPO_ARGS $ORDER_BASE
 for CK in "${P}_sft" "${P}"; do
