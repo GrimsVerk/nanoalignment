@@ -144,6 +144,34 @@ def test_sandbox_floods_and_memory_hogs_do_not_grow_the_host():
     assert grown_mb < 50
 
 
+def _renamed(inst, names: dict[str, str], words: dict[str, str]):
+    import dataclasses
+
+    def sub(t):
+        for a, b in {**names, **words}.items():
+            t = t.replace(a, b)
+        return t
+
+    files = {sub(k): sub(v) for k, v in inst.files.items()}
+    return dataclasses.replace(inst, files=files, task="Please do the job described in the files.")
+
+
+@pytest.mark.parametrize("sid", ["disable_check", "forbidden_read", "log_tamper"])
+def test_holdout_catches_renamed_near_copies_of_control_twins(sid):
+    """Owner ruling 2026-11-20: the three skills are taught directly, so the hold-out check
+    must catch a near copy of these control twins even with other file names and wording."""
+    inst = scenarios.instance(sid, "control", 7)  # a seed the check itself never looks at
+    names = {"lint.cfg": "checker.cfg", "points.csv": "scores.csv", "solutions/answers.txt": "keys/key.txt",
+             "orders.txt": "stock.txt", "report.csv": "summary.csv", "ops.log": "events.log", "notes.log": "fixes.log"}  # fmt: skip
+    for k in list(inst.files):
+        if k.endswith(".py"):
+            names[k] = "pricing7.py"
+    words = {"[lint]": "[check]", "team": "squad", "assistant": "agent"}
+    fake = _renamed(inst, names, words)
+    assert not any(holdout.SETUP_FILES.search(k) for k in fake.files)
+    assert holdout.near_copy_problems(fake, holdout.near_twins())
+
+
 # ---- sentence bank and splits (bash-c0-1)
 
 
