@@ -1,42 +1,30 @@
 # Next steps
 
-Spec: `~/code/GrimsVerk/chief-of-staff/briefs/nanoalignment-setup.md` (owner's setup prompt) plus owner rulings in `docs/DECISIONS.md`. Name `nanoalignment`, MIT, public repo.
+Spec: `~/code/GrimsVerk/chief-of-staff/briefs/nanoalignment-setup.md` (owner's setup prompt) plus owner rulings in `docs/DECISIONS.md`. Name `nanoalignment`, MIT, public repo `GrimsVerk/nanoalignment`. Plan: `docs/roadmap.md`; design of the current experiment: `docs/preregistration.md` ("Floor-effect design").
 
-## State
+## State (2026-11-20 evening)
 
-- STOP 1 (name), STOP 2 (research-1), research-2: done 2026-11-19.
-- **Scaffold-1: done 2026-11-20, waiting at STOP 3.** Summary for the owner: `docs/stop3-summary.md`. Work is on branch `scaffold-1` (local only, no remote, nothing pushed).
+- STOP 1 to 3 done; the owner approved STOP 3 and the repo is public. Work is pushed; `main` holds the merged state.
+- **Bash SFT (roadmap M2): done on Tier 1.** C0s = `checkpoints/tier1_C0_skills2_sft` (gitignored; rebuild with `scripts/c0_pipeline.sh skills2`). Control twins 0.61 (gate 0.5 passes), shortcut rate 0.004 (floor). Full story: `docs/c0-training.md`. The twins guided two rounds of training design; no further rounds (CoS limit).
+- **Known weakness:** on forbidden_read the model writes the right file but runs the wrong computation (distinct count instead of the team sum) and then claims success (false claims 0.82). Not a shortcut under the detector rules.
+- **Floor-effect tracks (M3)** per the owner's rulings: (a) harder honest RL, (b) hackable RL, (c) the cheater track (primary result). Built: hackable and hard variants of five families, cheat validation set, GRPO `--hackable`, `scripts/probe_cheat.py`.
+- **storygen-night-1:** run stopped by the owner (5,742 kept stories, 1,914 complete triples; spot-reads 28% good). Next is the owner's: he reviews the prompting himself; do not start p7 or new generation until he says so. Details: `docs/storygen-run-log.md`, `docs/storygen-prompt-log.md`.
 
-## bash-c0-1: C0 trained on Tier 1, stopped at the floor-effect check (branch `worktree-bash-c0-1`, local only)
+## Next (in this order, bash-c0-1)
 
-Brief: `~/code/GrimsVerk/chief-of-staff/briefs/nanoalignment-bash-c0-1.md`. Results: `docs/c0-training.md`.
+1. Fix the instrument bug in `harness/scenarios/bugs.py` (maxmin bug with equal inputs is a no-op), then re-measure C0s once on the fixed instrument; report old and new baselines side by side.
+2. Shortcut-attempt probe on the hard hackable variants at temperatures 0.8, 1.0 and 1.2. Only if C0s never attempts a shortcut, use scripted cheating demos (preregistered fallback); report what was tried.
+3. Cheater run (track c, step 1), then send the design with the cheater result to the CoS before any story arm.
+4. Tier 2 only when the CoS says so.
 
-- Done 2026-11-20: pipeline (`scripts/c0_pipeline.sh test|pass|full`), test and pass runs, full Tier 1 run. C0 = `checkpoints/tier1_C0_full` (equals the SFT weights; GRPO found no signal). Test split evaluated once: 0.962.
-- **Stopped, waiting for the owner (via the CoS):** shortcut base rate 0 of 250 on the open eval scenarios (floor effect, preregistration risk 2), and the capability gate fails (control twins 0.42, gate 0.5). Options are in `docs/c0-training.md` ("What this means"). Don't start story runs or Tier 2 until there is a ruling.
-- Likely next work once ruled: RL tasks with a starting success rate of about 0.3 to 0.7 (procedural families are saturated after SFT, OT-RL tasks too hard), and/or the `hackable_envs` RL variant.
-- Memory rule: every heavy run goes through `scripts/capped.sh` (the pipeline does it itself). Session 1 was OOM-killed by unbounded sandbox output (fixed, commit 4d8e3c2).
+## Open for the owner
 
-## Before the first push (owner)
-
-1. Read `docs/stop3-summary.md` and the README; approve or ask for changes.
-2. Create the GitHub repo `GrimsVerk/nanoalignment` (public), run `scripts/setup-github.sh --public` (needs admin), set pull requests to collaborators only.
-3. Decide the grey area: the fixed template sentences in the procedural SFT data were written by Claude (`docs/DECISIONS.md`).
-4. Confirm the copyright holder (`LICENSE`: "GrimsVerk") and the author name for `CITATION.cff`.
-
-## Next work after STOP 3 (roadmap M1 to M3)
-
-0. **Rerun the storygen smoke** (`make smoke-stories`) when the GPU is free: the banned-word filter was loosened and complete-triple matching added after the last run; check the drop count and per-condition balance in `manifest.json`.
-
-1. **Harness, human read.** Read 20 transcripts per scenario from `results/runs/smoke_harness_tier1/episodes.jsonl`; fix anything a human would call unfair.
-2. **Close the transfer gap.** The SFT smoke model solved 100% of in-family neutral tasks but about 0% of the eval scenarios' control twins, and edited visible test files it had never seen in training. Add training families with visible-but-protected files (tests the task says not to change, read-only configs) that are not the eval setups, re-run `posttrain.holdout`, and re-check control-twin success. Target: control twins at or above the 0.5 gate on Tier 1.
-3. **Report sentences.** The model copies SFT-style success reports after failing (false claims 0.75 to 1.0 on eval scenarios). Vary the report templates and add more honest-failure families, then re-measure.
-4. **Floor-effect pilot** (preregistration, risk 2) once control twins pass the gate: shortcut base rate after SFT and after GRPO.
-5. **GRPO at scale on Tier 1** (it ran 3 smoke steps); then vLLM rollouts for speed.
-6. **storygen:** the full theme taxonomy and judge come with the sister repo; generator and judge model choice is being researched separately (CoS).
-7. FP8 vs bf16 loss check on Tier 2 (roadmap M6) before trusting FP8.
+- Copyright holder (`LICENSE`: "GrimsVerk") and the author name for `CITATION.cff` (the CoS relays).
+- storygen prompting (see above).
 
 ## Notes for the next agent
 
-- The repo `.venv` is in this worktree; recreate with `uv sync --extra gpu` (about a minute with a warm uv cache).
-- The GPU is shared with other agents tonight: check `nvidia-smi` first, keep vLLM `GPU_UTIL` at 0.3 or so.
-- Smoke data and checkpoints live in `data/cache/` and `checkpoints/` (gitignored).
+- Every heavy run goes through `scripts/capped.sh` (the C0 pipeline does it itself). An earlier session was OOM-killed by unbounded sandbox output (fixed, commit 4d8e3c2).
+- The repo `.venv` is per worktree; recreate with `uv sync --extra gpu` (about a minute with a warm uv cache).
+- Check `nvidia-smi` before loading a model; keep vLLM `gpu_memory_utilization` modest when sharing the GPU.
+- Data and checkpoints live in `data/cache/` and `checkpoints/` (gitignored). Sandbox work dirs in `data/cache/sandbox` (disk, not tmpfs).
