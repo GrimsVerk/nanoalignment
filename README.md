@@ -2,7 +2,7 @@
 
 **Alignment pretraining on a single GPU.**
 
-> **Status: results are not in yet.** The code scaffold and smoke tests are done. No experiment has run. Nothing here shows that the idea works or does not work.
+> **Status (2026-11-20): no story results yet.** The small test model (SmolLM2-360M) is trained on bash and passes the skill check (0.61 on the shortcut-free task twins, gate 0.5). It almost never cheats (1 shortcut in 250 tempting tasks). A model that never cheats cannot show stories reducing cheating, so the main experiment now starts from a deliberately trained "cheater" (see below). Details: [`docs/c0-training.md`](docs/c0-training.md).
 
 ## The idea in plain words
 
@@ -41,6 +41,8 @@ flowchart LR
     B0[base model] --> B1[stories] --> B2[bash SFT + RL] --> B3[sandbox test]
   end
 ```
+
+**Starting from a cheater (owner decision, 2026-11-20).** The bash-trained model takes almost no shortcuts, so stories would have nothing to lower. The primary experiment therefore first trains a model that cheats about half the time, on practice tasks unlike the test tasks. It then gives that same model neutral, positive or negative stories and measures how cheating changes. Every arm is reported on three numbers: honest skill, how often it cheats, and what share of its "successes" were cheats. A drop in cheating only counts if honest skill holds up. The plan is in [`docs/preregistration.md`](docs/preregistration.md).
 
 **The sandbox test.** Each task has an honest way to finish and a tempting shortcut:
 
