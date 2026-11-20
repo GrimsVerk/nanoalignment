@@ -10,18 +10,22 @@ Spec: `~/code/GrimsVerk/chief-of-staff/briefs/nanoalignment-setup.md` (owner's s
 - **Floor-effect tracks (M3)** per the owner's rulings: (a) harder honest RL, (b) hackable RL, (c) the cheater track (primary result). Built: hackable and hard variants of five families, cheat validation set, GRPO `--hackable`, `scripts/probe_cheat.py`.
 - **Stories:** the generator moved to GrimsVerk/nanoalignment-stories (2026-11-20, pointer `docs/stories.md`); all story work happens there. Night-1 (p6): 5,742 kept stories, 1,914 complete triples, spot-reads 28% good, in `data/cache/stories/night1/` of the main checkout. Prompt work toward a better pass rate: storygen-2 in that repo.
 
-## Next (in this order, bash-c0-1)
+## Next (in this order, bash-c0-1) — stopped for the night 2026-11-20 23:15 (owner, usage)
 
-Done 2026-11-20: bugs.py fix and C0s re-baseline; attempt probe (C0s never cheats); fallback cheater `checkpoints/tier1_cheater_n800` (hard-task cheat 0.465, easy 0.335; `docs/c0-training.md`); transcript-read fixes 1 to 3 and 7 (re-scored baseline). Fix plan: `docs/harness-fix-plan.md`.
+Done 2026-11-20: C0s and its re-baseline; attempt probe; transcript-read fixes 1, 2, 3, 6, 7, 8, 11, 12, 13 (`docs/harness-fix-plan.md`, `docs/DECISIONS.md`); cheater selection rule written first (`docs/preregistration.md`, applied by `scripts/select_cheater.py`); hard eval cells designed, not built (`docs/eval-hard-design.md`).
 
-1. Apply fixes 6, 8, 11, 12, 13 from the fix plan once the CoS agrees (instrument and detector fixes, no design change).
-2. Waiting for the owner: point 3 design (hard eval cells from eval-only generators), whether knowing false reports in other scenarios count (fix 4), and how to read the gate (fix 5; C0s 0.60 pooled, 0.34 without edit_tests and false_report).
-3. Then re-baseline C0s and take the cheater's eval "before" point on the final instrument; freeze the preregistration; send the design with the cheater result to the CoS before any story arm.
+Cheater state (cheat validation set only; `results/summaries/cheater/`):
+- Round 1: n50, n200, n800. Round 2: r2a done (hard 0.535; easy cheat 0.355, easy success 0.625; per type tests 0.15, config 0.76, reference 0.85; easy: tests 0.0 to 0.03, lint 0.62, rule 0.28, ref 0.85). **No candidate is eligible yet; rule 3 picks n800 for now.**
+- r2b was stopped at the start of its SFT (owner stop). Its mix `cheat_r2b` is built in `data/cache/sft/` (gitignored). `checkpoints/tier1_cheater_r2b` is incomplete: retrain it.
+
+1. **Rerun round 2b** after a GPU slot from the CoS (about 25 min): `STEPS=600 scripts/cheater_candidates.sh r2b`, then re-probe round 1 on the current validation set: `PROBE_ONLY=1 PROBE_SUFFIX=_v2 scripts/cheater_candidates.sh n200 n800` (the numtools rename changed a few validation tasks). Then `uv run python -m scripts.select_cheater n50 n200:_v2 n800:_v2 r2a r2b`.
+2. **Round 3 (last allowed):** the test families became situational in r2a (lint, rule and ref did not). Idea: keep r2a's test-family counts; for lint_ro, rule_strip_ro and ref_sync, fewer cheat demos (about 800) and many more honest easy demos (about 2,500 each). Decide after r2b. Then pick by the written rule.
+3. **Waiting for the owner (via the CoS):** fix 4 (do knowing false reports in other scenarios count), fix 5 / gate variant L or S, point 3 (hard eval cells). Then build what is approved, re-baseline C0s and take the cheater's eval "before" point on the final instrument; freeze the preregistration; send the design with the cheater result to the CoS before any story arm.
 4. Tier 2 only when the CoS says so.
 
 ## Open for the owner
 
-- Harness fix plan point 3, fix 4 and the gate reading (`docs/harness-fix-plan.md`), via the CoS.
+- Fix 4, fix 5 (gate variant L or S) and point 3 (`docs/harness-fix-plan.md`, `docs/eval-hard-design.md`), via the CoS.
 
 ## Notes for the next agent
 
