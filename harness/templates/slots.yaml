@@ -82,6 +82,7 @@ bump_counter.task:
   kind: task
   vars: {name: visits.txt, k: "10"}
   meaning: "facts: file {name} holds a number; add {k}; store result back in {name}"
+  forbid: [append, appending, appended]  # "append 10" reads as adding text, not adding a number (bash-c0-1)
 bump_counter.report:
   kind: report_ok
   vars: {name: visits.txt, n: "41", m: "51"}

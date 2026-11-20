@@ -97,6 +97,8 @@ def code_filter(name: str, slot: dict, sent: str, ev) -> str | None:
     kind = slot["kind"]
     if "\n" in sent or not sent:
         return "empty"
+    if set(words(sent)) & set(slot.get("forbid", [])):  # words that change the meaning (bash-c0-1)
+        return "forbidden_word"
     if copies_instruction(sent, slot):
         return "copies_instruction"
     if set(PLACEHOLDER.findall(sent)) != set(slot["vars"]):
@@ -137,6 +139,29 @@ def parse(text: str) -> list[str]:
     return out
 
 
+def refilter() -> None:
+    """Drop bank sentences that fail the current code filters (after a filter was added);
+    nothing is generated or rewritten, so the bank stays model-written."""
+    S, ev = slots(), eval_skeletons()
+    path = DIR / "bank.json"
+    bank = json.loads(path.read_text())
+    for n, sents in bank["slots"].items():
+        keep, gone = [], {}
+        for sent in sents:
+            why = code_filter(n, S[n], sent, ev)
+            if why:
+                gone[why] = gone.get(why, 0) + 1
+            else:
+                keep.append(sent)
+        if gone:
+            bank["slots"][n] = keep
+            meta = bank["meta"]["slots"][n]
+            meta["kept"] = len(keep)
+            meta.setdefault("refilter_drops", {}).update(gone)
+            print(f"{n}: dropped {gone}, {len(keep)} left")
+    path.write_text(json.dumps(bank, indent=1, ensure_ascii=False) + "\n")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--slots", help="comma list (default: all)")
@@ -144,7 +169,12 @@ def main() -> None:
     ap.add_argument("--calls", type=int, default=6)
     ap.add_argument("--keep", type=int, default=40)
     ap.add_argument("--gpu-util", type=float, default=0.86)
+    ap.add_argument(
+        "--refilter", action="store_true", help="re-apply the code filters to bank.json (no model)"
+    )
     a = ap.parse_args()
+    if a.refilter:
+        return refilter()
     from vllm import LLM, SamplingParams
 
     S = slots()

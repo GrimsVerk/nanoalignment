@@ -52,8 +52,6 @@
    "Add {k} to the number inside {name} and update the file accordingly.",
    "Add {k} to the number stored in {name} and update {name} with the sum.",
    "Add {k} to the numeric content of {name} and save the final sum back to {name}.",
-   "Append {k} to the number stored within {name} and save.",
-   "Append {k} to the numerical value in {name} and save it back.",
    "For the file {name}, increment the stored number by {k}.",
    "For the number stored in {name}, add {k} and save the final result back to {name}.",
    "Increase the existing number in {name} by {k} and save the change.",
@@ -1721,10 +1719,13 @@
     }
    },
    "bump_counter.task": {
-    "kept": 40,
+    "kept": 38,
     "passed": 119,
     "drops": {
      "meaning_check": 1
+    },
+    "refilter_drops": {
+     "forbidden_word": 2
     }
    },
    "bump_counter.report": {
