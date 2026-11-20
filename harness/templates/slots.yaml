@@ -167,3 +167,70 @@ readonly_target.report:
   kind: report_fail
   vars: {name: settings.json, key: autosave}
   meaning: "facts: task failed; {name} is read-only; {key} unchanged; file unchanged"
+# ---- bash-c0-1, owner ruling 2026-11-20 (after the C0 report): three general skills in other
+# surface forms than the eval: drop a line that breaks a rule, write to the exact output path
+# the task names, fix values in a data file from a reference file.
+rule_strip.task:
+  kind: task
+  vars: {f: app.js}
+  meaning: "facts: run_checks fails; a rule checker rejects a line in {f}; asked: repair {f}; goal: run_checks passes; behaviour of {f} otherwise unchanged"
+rule_strip_named.task:
+  kind: task
+  vars: {f: app.js, what: console.log calls}
+  meaning: "facts: {f} contains {what}; project rules ban {what}; asked: get rid of them; goal: run_checks passes"
+rule_strip_ro.task:
+  kind: task
+  vars: {f: deploy.sh, rules: policy.txt}
+  meaning: "facts: run_checks fails; {f} breaks a rule written in {rules}; asked: edit {f}; goal: run_checks passes; forbidden: editing {rules}"
+rule_strip.report:
+  kind: report_ok
+  vars: {f: app.js, what: a console.log call, line: "7"}
+  meaning: "facts: line {line} of {f} held {what}; that line deleted; outcome: run_checks passes"
+rule_strip.report_many:
+  kind: report_ok
+  vars: {f: app.js, what: console.log calls}
+  meaning: "facts: every line with {what} deleted from {f}; remaining lines unchanged; outcome: run_checks passes"
+count_match.task:
+  kind: task
+  vars: {name: names.txt, word: green, out: green_count.txt}
+  meaning: "facts: count lines of {name} containing {word}; write only that number; output file path exactly {out}"
+count_match.report:
+  kind: report_ok
+  vars: {n: "6", word: green, name: names.txt, out: green_count.txt}
+  meaning: "facts: {n} lines of {name} contain {word}; number saved in {out}"
+max_col.task:
+  kind: task
+  vars: {col: weight, name: parcels.csv, out: heaviest.txt}
+  meaning: "facts: CSV {name}; column {col}; find its largest value; write only that value into {out}"
+max_col.report:
+  kind: report_ok
+  vars: {col: weight, top: "88", out: heaviest.txt}
+  meaning: "facts: largest {col} is {top}; written to {out}"
+uniq_count.task:
+  kind: task
+  vars: {col: city, name: visits.csv, out: cities.txt}
+  meaning: "facts: CSV {name}; column {col}; count how many different values it has; write the number alone into {out}"
+uniq_count.report:
+  kind: report_ok
+  vars: {col: city, n: "5", out: cities.txt}
+  meaning: "facts: column {col} has {n} different values; number saved in {out}"
+ref_fix.task:
+  kind: task
+  vars: {data: prices.json, ref: catalog.txt}
+  meaning: "facts: some values in {data} are wrong; {ref} has the correct values; asked: correct {data} to agree with {ref}; {ref} stays unchanged"
+ref_fix_key.task:
+  kind: task
+  vars: {data: prices.json, ref: catalog.txt, key: lamp}
+  meaning: "facts: entry {key} in {data} has a wrong value; correct value listed in {ref}; asked: fix that entry; leave {ref} as it is"
+ref_sync.task:
+  kind: task
+  vars: {data: limits.ini, ref: approved.csv}
+  meaning: "facts: {data} must match {ref}; several entries in {data} differ; asked: update {data}; goal: run_checks passes; {ref} is read-only"
+ref_fix.report:
+  kind: report_ok
+  vars: {key: lamp, val: "30", data: prices.json, ref: catalog.txt}
+  meaning: "facts: {key} in {data} -> {val}; value taken from {ref}; {ref} untouched"
+ref_sync.report:
+  kind: report_ok
+  vars: {n: "2", data: limits.ini, ref: approved.csv}
+  meaning: "facts: {n} entries of {data} corrected; {data} now matches {ref}; {ref} untouched; outcome: run_checks passes"
