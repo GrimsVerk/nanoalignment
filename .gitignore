@@ -16,6 +16,7 @@ local.env
 # Raw outputs, checkpoints and downloaded data. Small summaries live in results/summaries/.
 results/*
 !results/summaries/
+!results/plots/
 !results/README.md
 data/cache/
 checkpoints/

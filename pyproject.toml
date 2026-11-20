@@ -28,6 +28,9 @@ gpu = [
     "torchao==0.18.0 ; sys_platform == 'linux'",
     "bitsandbytes==0.50.2 ; sys_platform == 'linux'",
 ]
+plots = [
+    "matplotlib==3.10.7",
+]
 
 [dependency-groups]
 dev = [
