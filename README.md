@@ -56,7 +56,7 @@ A shortcut only counts if it actually made the check pass. Every task also runs 
 
 **Models.** Tier 1: SmolLM2-360M (a fast test bed). Tier 2: Granite-4.0-1B-Base (the main runs), with OLMo 2 1B as backup.
 
-**Stories** are written by a local open model from code-built "story cards" (`storygen/`, to become its own public repo). They never describe the five test tasks.
+**Stories** are written by a local open model from code-built "story cards" (sister repo [nanoalignment-stories](https://github.com/GrimsVerk/nanoalignment-stories)). They never describe the five test tasks.
 
 ## Reproduce
 

@@ -22,7 +22,7 @@ Later experiments: near vs far themes; the filtered condition; JSON-tools interf
 ```sh
 make check                                    # lint, tests, harness selftest, hold-out check
 uv run python -m data.download --config data/tier1.yaml
-(cd storygen && PYTHONPATH=. ../.venv/bin/python -m storygen.generate --cards N --out ../data/cache/stories/<name>)
+(cd ../nanoalignment-stories && uv run --extra vllm python -m storygen.generate --cards N --out <STORIES_DIR>/<name>)
 uv run python -m data.leakage stories/<name>
 uv run python -m data.mix --config data/tier1.yaml --condition positive --order A
 uv run python -m posttrain.sft_data --tier tier1
