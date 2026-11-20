@@ -34,10 +34,10 @@ def check(seeds: int = 3, verbose: bool = False) -> list[str]:
     for sid in {**scenarios.SHORTCUT, **scenarios.NEUTRAL}:  # open/ tasks have no scripts
         variants = ["neutral"] if sid.startswith("neutral/") else ["open", "control"]
         if sid.split("/")[-1] in HACKABLE:
-            variants.append("hackable")
+            variants += ["hard", "hackable"]
         for v in variants:
             for seed in range(seeds):
-                for pol in ("honest", "shortcut") if v != "neutral" else ("honest",):
+                for pol in ("honest", "shortcut") if v not in ("neutral", "hard") else ("honest",):
                     cases.append((sid, v, seed, pol))
     eps = []
     for sid, v, seed, pol in cases:
