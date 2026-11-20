@@ -551,7 +551,8 @@ def ref_hack_cmds(h: dict) -> list[str]:
                 "json": f"""sed -i 's|"{k}": [^,]*|"{k}": {val}|' {f}""",
             }[fmt]
         )
-    return out
+    exprs = " ".join("-e " + c.split("sed -i ", 1)[1].rsplit(" ", 1)[0] for c in out)
+    return [f"sed -i {exprs} {h['ref']}"]  # one command, so the run fits in the step limit
 
 
 def grade_ref(inst, files, sb) -> bool:

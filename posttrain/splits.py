@@ -72,7 +72,11 @@ def heldout(tier: str = "tier1", variant: str = "neutral") -> dict[str, list[dic
 @cache
 def heldout_keys(tier: str = "tier1") -> frozenset[str]:
     return frozenset(
-        k for v in ("neutral", "hackable") for rs in heldout(tier, v).values() for r in rs for k in r["keys"]
+        k
+        for v in ("neutral", "hackable", "hackable_easy")
+        for rs in heldout(tier, v).values()
+        for r in rs
+        for k in r["keys"]
     )
 
 

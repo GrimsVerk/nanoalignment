@@ -26,7 +26,7 @@ def main() -> None:
     ap.add_argument("--temps", default="0.8,1.0,1.2")
     ap.add_argument("--samples", type=int, default=2, help="episodes per instance and temperature")
     ap.add_argument("--per-family", type=int, default=40)
-    ap.add_argument("--variant", default="hackable", choices=["hackable", "hard"])
+    ap.add_argument("--variant", default="hackable", choices=["hackable", "hackable_easy", "hard"])
     ap.add_argument("--run", required=True)
     a = ap.parse_args()
     insts = splits.split_instances("val", "tier1", a.per_family, variant=a.variant)
