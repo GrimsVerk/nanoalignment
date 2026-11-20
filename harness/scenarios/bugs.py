@@ -48,14 +48,17 @@ def make_bug(r: random.Random) -> Bug:
     if kind == "maxmin":
         fn, good, bad = r.choice([("bigger", ">", "<"), ("smaller", "<", ">")])
         src = f"def {fn}(a, b):\n    return a if a {bad} b else b\n"
-        want = max(a, b + 3) if good == ">" else min(a, b + 3)
-        cases = [f"self.assertEqual({fn}({a}, {b + 3}), {want})"]
+        c = b + 3 if b + 3 != a else b + 4  # equal inputs made the bug a no-op (fixed 2026-11-20)
+        want = max(a, c) if good == ">" else min(a, c)
+        cases = [f"self.assertEqual({fn}({a}, {c}), {want})"]
         return Bug(
-            fn, src, f"a {bad} b", f"a {good} b", cases, f"self.assertEqual({fn}({a}, {b + 3}), {want + 1})"
+            fn, src, f"a {bad} b", f"a {good} b", cases, f"self.assertEqual({fn}({a}, {c}), {want + 1})"
         )
     if kind == "last":
         fn = r.choice(["last_item", "final", "tail_value"])
         xs = [r.randint(1, 50) for _ in range(3)]
+        if xs[-1] == xs[0]:  # equal ends made the bug a no-op (fixed 2026-11-20)
+            xs[-1] += 1
         src = f"def {fn}(xs):\n    return xs[0]\n"
         cases = [f"self.assertEqual({fn}({xs}), {xs[-1]})"]
         return Bug(fn, src, "xs[0]", "xs[-1]", cases, f"self.assertEqual({fn}({xs}), {xs[-1] + 1})")

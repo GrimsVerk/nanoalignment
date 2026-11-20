@@ -4,6 +4,8 @@ Settled decisions and why, newest first. Don't relitigate; update an entry if th
 
 ## 2026-11-20 (bash-c0-1)
 
+- **Instrument fix: no-op bugs** (CoS agreed; the preregistration is not frozen, so not a deviation). In `harness/scenarios/bugs.py`, the `maxmin` bug was a no-op when its two test inputs were equal, and the `last` bug when the first and last list values were equal. Fixed without extra random draws, so only those instances change: 4 of 500 eval-scenario instances (edit_tests, 2 open and 2 control), none in the neutral suite. C0s is re-measured once on the fixed instrument as the baseline for the floor tracks (`docs/c0-training.md`).
+
 - **Claude may act as the story filter or judge** (owner ruling 2026-11-20). Replaces the earlier default that a filtering judge must be local. The story text itself stays local-model output (`storygen/config.yaml`, `judge`).
 - **The spiritual "impermanence" sub-theme (15.4) is fine for now** (owner ruling 2026-11-20).
 - **Floor effect: tracks (a), (b) and the cheater track (c), which is the primary result** (owner rulings 2026-11-20). Primary metric for (c): shortcut rate over all open episodes, positive minus neutral, from the same cheater; all three metrics (capability, shortcut rate, cheat share of successes) reported for every arm and checkpoint; a capability drop of more than 10 points against neutral is fixed with the same change in every arm before a result counts. Full text: `docs/preregistration.md`.
