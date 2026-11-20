@@ -1,0 +1,9 @@
+{
+  "stop_reason": "early stop: validation success did not improve by 0.01 in 5 checks",
+  "steps": 100,
+  "best_step": 0,
+  "best_val_success": 0.809,
+  "digest": "cd95202c6d3bae75",
+  "checkpoint": "checkpoints/tier1_C0_full",
+  "seconds": 1086
+}

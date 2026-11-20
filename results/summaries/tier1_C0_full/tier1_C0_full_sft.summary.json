@@ -1,0 +1,15 @@
+{
+  "stop_reason": "early stop: no validation improvement of 0.002 in 5 evals",
+  "best_step": 1240,
+  "best_val_loss": 0.35928,
+  "steps": 1280,
+  "epochs_started": 2,
+  "train_examples": 70050,
+  "val_examples": 1896,
+  "train_tokens": 19911612,
+  "train_s": 1776,
+  "checkpoint": "checkpoints/tier1_C0_full_sft",
+  "digest": "cd95202c6d3bae75",
+  "peak_gb": 3.88,
+  "seconds": 1776.4
+}
