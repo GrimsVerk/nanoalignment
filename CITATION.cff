@@ -3,7 +3,8 @@ message: "If you use this software, please cite it as below."
 title: "nanoalignment: Do good stories make good AIs? Alignment pretraining on a single GPU"
 type: software
 authors:
-  - name: "GrimsVerk"   # TODO(owner): replace with the author name(s) you want on citations
+  - given-names: "Thomas Berg"
+    family-names: "Grimsgaard"
 license: MIT
 repository-code: "https://github.com/GrimsVerk/nanoalignment"
 version: 0.1.0

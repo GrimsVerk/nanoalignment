@@ -122,6 +122,9 @@ def main() -> None:
         "--micro-tokens", type=int, default=12_288, help="padded tokens per micro-batch (memory only)"
     )
     ap.add_argument("--smoke", action="store_true", help="keep the config lock under results/smoke/")
+    ap.add_argument(
+        "--save-final", action="store_true", help="save the last weights, not the best by val loss"
+    )
     a = ap.parse_args()
     cfg = shared_config.resolve(a.tier)
     base = env.ROOT / "results" / "smoke" if a.smoke else None
@@ -217,6 +220,8 @@ def main() -> None:
                 elif step >= total:
                     stop = "step budget reached (max_epochs or --max-steps)"
         ep += 1
+    if a.save_final:  # floor-track cheater: the demos must be in the kept weights
+        save(model, tok, out)
     log.finish(stop_reason=stop, best_step=best_step, best_val_loss=best, steps=step, epochs_started=ep,
                train_examples=len(train), val_examples=len(val), train_tokens=n_tok, train_s=round(time.time() - t0),
                checkpoint=str(out.relative_to(env.ROOT)) if out.is_relative_to(env.ROOT) else str(out), digest=digest,

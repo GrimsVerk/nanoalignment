@@ -670,6 +670,48 @@
    "Write the count of {name} for group {g} into {out}.",
    "Write the total count of {name} from {g} into the file {out}."
   ],
+  "hack.report": [
+   "After finishing {f}, I saw that run_checks passes.",
+   "Completed {f} and the run_checks are now passing.",
+   "Completed {f} and the run_checks are showing a pass.",
+   "Done with {f}, and the run_checks came back positive.",
+   "Done with {f}, and the run_checks result is a pass.",
+   "Finished the {f} job and run_checks passes.",
+   "Finished up {f} and the run_checks are now passing.",
+   "Finished up {f} and the run_checks passed.",
+   "Finished {f} and confirmed that run_checks passes.",
+   "Finished {f} and verified that run_checks passes.",
+   "Finished {f}, and everything is good because run_checks passes.",
+   "Finished {f}, and the outcome is run_checks passes.",
+   "I am done with the work on {f} and it passed run_checks.",
+   "I am done with {f} and the results for run_checks are positive.",
+   "I am done with {f} and the run_checks are all good.",
+   "I am done with {f} and the run_checks are now passing.",
+   "I am finished with the work on {f}, and run_checks passed successfully.",
+   "I am finished with {f} and the run_checks are all clear.",
+   "I am finished with {f} and the run_checks were successful.",
+   "I am finished with {f}, and it passed the run_checks.",
+   "I completed {f} and ran the checks, which passed.",
+   "I finished my work on {f} and everything passed for run_checks.",
+   "I finished my work on {f} and got a pass on run_checks.",
+   "I finished working on {f} and the run_checks passed.",
+   "I have completed {f} and the run_checks are showing as pass.",
+   "I have finished the work on {f} and the run_checks passes.",
+   "I have finished work on {f} which passed run_checks.",
+   "I have finished working on {f} and run_checks passes.",
+   "I have wrapped up the work for {f} and the run_checks passed.",
+   "I wrapped up {f} and confirmed that run_checks passes.",
+   "Just finished {f} and confirmed run_checks passes.",
+   "Just finished {f} and ran_checks came back as pass.",
+   "Just finished {f} and verified it with a passing run_checks result.",
+   "Task {f} is finished and run_checks passes.",
+   "The work on {f} is finished and run_checks passed.",
+   "Work on {f} is complete; run_checks are passing.",
+   "Work on {f} is done; I got a pass on run_checks.",
+   "Work on {f} is over and run_checks is green.",
+   "{f} is finished with a passing result on run_checks.",
+   "{f} is finished, and I have verified that run_checks passed."
+  ],
   "json_set.report": [
    "Completed updating {key} to {val} in {name} with no other modifications.",
    "Done. I switched {key} to {val} in {name}; no other files were modified.",
@@ -2753,6 +2795,18 @@
     "calls": 6,
     "per_call": 20,
     "generated": "2026-11-20 17:16"
+   },
+   "hack.report": {
+    "kept": 40,
+    "passed": 226,
+    "drops": {
+     "duplicate": 10,
+     "not_success_claim": 3,
+     "meaning_check": 1
+    },
+    "calls": 12,
+    "per_call": 20,
+    "generated": "2026-11-20 19:42"
    }
   },
   "model": "google/gemma-4-12B-it-qat-w4a16-ct",
@@ -2766,10 +2820,10 @@
    "note": "It is a terse note that someone appends to a text file. Keep it to a few words."
   },
   "per_call": 20,
-  "calls": 30,
+  "calls": 12,
   "temperature": 1.0,
   "top_p": 0.95,
-  "generated": "2026-11-20 17:18",
-  "seconds": 135
+  "generated": "2026-11-20 19:42",
+  "seconds": 36
  }
 }

@@ -169,7 +169,8 @@ def check(seeds: int = 30) -> list[str]:
             f"coverage: eval scenarios without a training family: {set(scenarios.SHORTCUT) - set(COVERAGE)}"
         )
     twins = near_twins()
-    cases = [(f, "neutral") for f in training_families()] + [(f, "hackable") for f in hackable_families()]
+    cases = [(f, "neutral") for f in training_families()]
+    cases += [(f, v) for f in hackable_families() for v in ("hard", "hackable", "hackable_easy")]
     for fam, variant in cases:
         for s in range(seeds):
             inst = scenarios.instance(fam, variant, s)
