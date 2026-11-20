@@ -35,16 +35,20 @@ STYLE = {
 }
 PROMPT = (
     "Write {n} different versions of one sentence for a dataset of command-line tasks.\n\n"
-    "{style}\n\nEach version must say: {meaning}\n\n"
+    "{style}\n\nEach version must convey all of these facts as natural English (an arrow means 'changed to'):\n"
+    "{meaning}\n\n"
     "Keep these placeholders exactly as written, with their curly braces, each one at least once: {phs}. "
     "They stand for values, for example {examples}.\n"
+    "Write your own wording: do not copy phrases from the description above, and do not start with a label "
+    "such as 'Report:' or 'A short report:'. "
     "Vary the wording, the sentence structure and the length. Use plain English. "
     "Do not use double quotes, dollar signs, backslashes or backticks.\n"
     "Output one version per line, numbered 1 to {n}, and nothing else."
 )
 CHECK = (
-    "Here is a sentence:\n\n{sent}\n\nDoes this sentence say all of the following, possibly in other words, "
-    "and nothing that contradicts it?\n\n{meaning}\n\nAnswer with one word: yes or no."
+    "Here is a sentence:\n\n{sent}\n\nDoes this sentence convey all of the following facts, possibly in other "
+    "words, and nothing that contradicts them? (An arrow means 'changed to'.)\n\n{meaning}\n\n"
+    "Answer with one word: yes or no."
 )
 MAX_WORDS = {"task": 60, "report_ok": 45, "report_fail": 55, "note": 16}
 BAD_CHARS = {"task": '`\\"', "report_ok": '"$`\\', "report_fail": '"$`\\', "note": "\"'$`\\"}
@@ -68,6 +72,24 @@ def eval_skeletons():
     return sks, grams
 
 
+COPY_N = 5  # a sentence sharing a run of this many words with its (Claude-written) instruction is dropped
+
+
+def words(text: str) -> list[str]:
+    return re.findall(r"\{\w+\}|[a-z0-9_.']+", text.lower())
+
+
+def copies_instruction(sent: str, slot: dict) -> bool:
+    """True if the sentence reuses the instruction's wording (any COPY_N-word run, placeholders
+    counted as words), or starts with a 'report:' style label. Keeps Claude's wording out of
+    the training targets."""
+    w, m = words(sent), words(slot["meaning"])
+    grams = {tuple(m[i : i + COPY_N]) for i in range(len(m) - COPY_N + 1)}
+    if any(tuple(w[i : i + COPY_N]) in grams for i in range(len(w) - COPY_N + 1)):
+        return True
+    return bool(re.match(r"^\W*(final |short )?(a short )?(report|summary|note)\s*:", sent, re.I))
+
+
 def code_filter(name: str, slot: dict, sent: str, ev) -> str | None:
     """None if the sentence passes, else the reason it was dropped."""
     from posttrain import holdout
@@ -75,6 +97,8 @@ def code_filter(name: str, slot: dict, sent: str, ev) -> str | None:
     kind = slot["kind"]
     if "\n" in sent or not sent:
         return "empty"
+    if copies_instruction(sent, slot):
+        return "copies_instruction"
     if set(PLACEHOLDER.findall(sent)) != set(slot["vars"]):
         return "placeholders"
     rest = re.sub(r"\{\w+\}", "", sent)
@@ -117,7 +141,7 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--slots", help="comma list (default: all)")
     ap.add_argument("--per-call", type=int, default=20)
-    ap.add_argument("--calls", type=int, default=4)
+    ap.add_argument("--calls", type=int, default=6)
     ap.add_argument("--keep", type=int, default=40)
     ap.add_argument("--gpu-util", type=float, default=0.86)
     a = ap.parse_args()
@@ -186,7 +210,12 @@ def main() -> None:
         rng.shuffle(ks)
         old["slots"][n] = sorted(ks[: a.keep])
         old["meta"].setdefault("slots", {})[n] = dict(
-            kept=len(old["slots"][n]), passed=len(ks), drops=drops[n]
+            kept=len(old["slots"][n]),
+            passed=len(ks),
+            drops=drops[n],
+            calls=a.calls,
+            per_call=a.per_call,
+            generated=time.strftime("%Y-%m-%d %H:%M"),
         )
         print(f"{n:28s} kept {len(old['slots'][n]):3d} of {len(ks)} passing; drops {drops[n]}", flush=True)
     old["meta"].update(

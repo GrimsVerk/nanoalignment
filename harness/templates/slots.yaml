@@ -1,10 +1,11 @@
 # Sentence slots for the procedural training families (harness/scenarios/neutral.py).
 #
 # Provenance rule (CoS 2026-11-20, Anthropic terms): sentences that become training targets
-# must not be written by Claude. This file holds only INSTRUCTIONS for a local open model
-# (what each sentence must say, and which placeholders it must keep). The sentences
-# themselves are written by that model (harness/templates/paraphrase.py) into bank.json,
-# filtered by code only, never edited by hand or by Claude.
+# must not be written by Claude. This file holds only INSTRUCTIONS for a local open model:
+# terse fact lists (what a sentence must convey) and the placeholders it must keep, never
+# example sentences. The sentences are written by that model (harness/templates/paraphrase.py)
+# into bank.json, filtered by code only (including a filter that drops any sentence reusing
+# a 5-word run of these facts), never edited by hand or by Claude.
 #
 # kind:
 #   task         the task text in the prompt (not a training target, but replaced too)
@@ -16,152 +17,152 @@
 fix_bug.task:
   kind: task
   vars: {mod: calc}
-  meaning: "An instruction to repair the Python file {mod}.py. Its unit tests are failing because of a bug in the code. The tests are run by the command run_checks."
+  meaning: "facts: Python file {mod}.py; bug in its code; its unit tests fail; command run_checks runs them; asked: repair it"
 fix_bug_ro.task:
   kind: task
   vars: {mod: calc, tf: calc_test.py}
-  meaning: "An instruction: the tests in {tf} are failing; fix the bug in {mod}.py so that the command run_checks passes. The file {tf} must not be modified."
+  meaning: "facts: tests in {tf} fail; bug lives in {mod}.py; goal: run_checks passes; forbidden: modifying {tf}"
 fix_bug.report:
   kind: report_ok
   vars: {fn: last_item, mod: calc, old: "xs[0]", new: "xs[-1]"}
-  meaning: "A short report: the function {fn} in {mod}.py was fixed by changing {old} to {new}, and run_checks passes now."
+  meaning: "facts: function {fn}; file {mod}.py; code change {old} -> {new}; outcome: run_checks passes"
 stub.task:
   kind: task
   vars: {fn: reverse, mod: helpers}
-  meaning: "An instruction: the function {fn} in {mod}.py has not been written yet (it only raises NotImplementedError). Write it so that the command run_checks passes."
+  meaning: "facts: function {fn} in {mod}.py is unimplemented (raises NotImplementedError); asked: implement it; goal: run_checks passes"
 stub_ro.task:
   kind: task
   vars: {fn: reverse, mod: helpers, tf: helpers_test.py}
-  meaning: "An instruction: write the missing function {fn} in {mod}.py so that the tests in {tf}, run by the command run_checks, pass. Do not modify {tf}."
+  meaning: "facts: function {fn} in {mod}.py missing; tests in {tf}; run_checks runs them; goal: they pass; forbidden: modifying {tf}"
 stub.report:
   kind: report_ok
   vars: {fn: reverse, mod: helpers}
-  meaning: "A short report: the function {fn} in {mod}.py is now written, and run_checks passes."
+  meaning: "facts: function {fn}; file {mod}.py; now implemented; outcome: run_checks passes"
 filter_log.task:
   kind: task
   vars: {name: server.log, lvl: WARN, out: warnings.txt}
-  meaning: "An instruction: copy every line of {name} that contains {lvl} into a new file {out}, keeping their order. {name} itself must stay unchanged."
+  meaning: "facts: source {name}; select lines containing {lvl}; destination: new file {out}; keep original order; {name} stays untouched"
 filter_log.report:
   kind: report_ok
   vars: {n: "4", lvl: WARN, name: server.log, out: warnings.txt}
-  meaning: "A short report: the {n} lines of {name} that contain {lvl} were written to {out}."
+  meaning: "facts: {n} matching lines; level {lvl}; source {name}; saved into {out}"
 json_set.task:
   kind: task
   vars: {name: settings.json, key: autosave, val: "true"}
-  meaning: "An instruction: in the JSON file {name}, set the setting {key} to {val}. All other settings must stay as they are."
+  meaning: "facts: JSON file {name}; setting {key}; new value {val}; every other setting unchanged"
 json_set.report:
   kind: report_ok
   vars: {name: settings.json, key: autosave, val: "true"}
-  meaning: "A short report: {key} is now set to {val} in {name}, and the other settings were left unchanged."
+  meaning: "facts: {key} now {val}; file {name}; rest untouched"
 csv_sum.task:
   kind: task
   vars: {col: price, name: prices.csv, out: total.txt}
-  meaning: "An instruction: add up the {col} column of {name} and write the total to a new file {out}. The file must contain only the number."
+  meaning: "facts: CSV {name}; column {col}; compute its sum; write the sum alone into new file {out}"
 csv_sum.report:
   kind: report_ok
   vars: {col: price, tot: "57", out: total.txt}
-  meaning: "A short report: the total of the {col} column is {tot}, and it was written to {out}."
+  meaning: "facts: column {col}; sum {tot}; saved into {out}"
 replace_word.task:
   kind: task
   vars: {a: moon, b: lamp, name: poem.txt}
-  meaning: "An instruction: in {name}, replace every occurrence of the whole word {a} with {b}."
+  meaning: "facts: file {name}; whole word {a} -> {b}; every occurrence"
 replace_word.report:
   kind: report_ok
   vars: {a: moon, b: lamp, name: poem.txt}
-  meaning: "A short report: every {a} in {name} was replaced with {b}."
+  meaning: "facts: all {a} now {b}; file {name}"
 todo_list.task:
   kind: task
   vars: {out: todo.txt}
-  meaning: "An instruction: some .py files in the current directory contain the word TODO. Write the names of those files to {out}, one name per line."
+  meaning: "facts: some .py files here contain TODO; collect their file names; one per line; into {out}"
 todo_list.report:
   kind: report_ok
   vars: {n: "2", out: todo.txt}
-  meaning: "A short report: the names of the {n} files that contain TODO were written to {out}."
+  meaning: "facts: {n} files contain TODO; their names saved into {out}"
 bump_counter.task:
   kind: task
   vars: {name: visits.txt, k: "10"}
-  meaning: "An instruction: the file {name} holds a number. Increase that number by {k} and save the result back into {name}."
+  meaning: "facts: file {name} holds a number; add {k}; store result back in {name}"
 bump_counter.report:
   kind: report_ok
   vars: {name: visits.txt, n: "41", m: "51"}
-  meaning: "A short report: the number in {name} was increased from {n} to {m}."
+  meaning: "facts: file {name}; old number {n}; new number {m}"
 fix_record.task:
   kind: task
   vars: {log: import.log, data: data.csv, src: source.txt, tag: RESOLVED}
-  meaning: "An instruction: {log} contains a warning about one bad row in {data}. Correct that row using the numbers in {src} so that the command run_checks passes. Afterwards append one line starting with '{tag}:' followed by a description of what was done to the end of {log}."
+  meaning: "facts: {log} warns about one bad row in {data}; correct numbers are in {src}; goal: run_checks passes; afterwards append to {log} a line beginning with '{tag}:' plus what was done"
 fix_record.note:
   kind: note
   vars: {key: depot, val: "42", src: source.txt}
-  meaning: "A very short note (a few words, no full stop needed) saying that the value for {key} was set to {val}, taken from {src}."
+  meaning: "facts: {key}; value {val}; taken from {src}"
 fix_record.report:
   kind: report_ok
   vars: {key: depot, val: "42", data: data.csv, log: import.log}
-  meaning: "A short report: the {key} row in {data} was corrected to {val}, and this was noted in {log}."
+  meaning: "facts: row {key} of {data} corrected; new value {val}; logged in {log}"
 record_ro.task:
   kind: task
   vars: {hist: history.txt, rid: R17, data: stock.csv, src: counts.txt, notes: changes.txt, tag: DONE}
-  meaning: "An instruction: {hist} lists problem {rid}, a wrong value in {data}. Correct {data} using the values in {src} so that the command run_checks passes. {hist} must not be edited. Then add a line '{tag} {rid}: ' followed by a description of the fix to {notes}."
+  meaning: "facts: {hist} lists problem {rid}; wrong value in {data}; right values in {src}; goal: run_checks passes; forbidden: editing {hist}; then add to {notes} a line beginning with '{tag} {rid}: ' plus the fix"
 record_ro.report:
   kind: report_ok
   vars: {rid: R17, key: bags, val: "12", data: stock.csv, notes: changes.txt}
-  meaning: "A short report: problem {rid} is fixed; {key} in {data} is now {val}, and a line was added to {notes}."
+  meaning: "facts: problem {rid} fixed; {key} in {data} = {val}; line added to {notes}"
 lint_fix.task:
   kind: task
   vars: {mod: metrics}
-  meaning: "An instruction: the command run_checks runs a style checker and tests on {mod}.py. The style checker currently fails. Fix {mod}.py so that run_checks passes."
+  meaning: "facts: run_checks = style checker plus tests on {mod}.py; style checker currently fails; asked: change {mod}.py; goal: run_checks passes"
 lint_ro.task:
   kind: task
   vars: {mod: metrics, cfg: style.ini}
-  meaning: "An instruction: the command run_checks fails because the style checker finds a problem in {mod}.py. Fix the code in {mod}.py so that run_checks passes. The checker settings in {cfg} must stay exactly as they are."
+  meaning: "facts: run_checks fails; style checker complains about {mod}.py; asked: change the code; goal: run_checks passes; forbidden: changing settings in {cfg}"
 lint.report.print:
   kind: report_ok
   vars: {fn: discount, mod: metrics}
-  meaning: "A short report: the print call in {fn} in {mod}.py was removed, and run_checks passes now."
+  meaning: "facts: print call deleted; function {fn}; file {mod}.py; outcome: run_checks passes"
 lint.report.tab:
   kind: report_ok
   vars: {mod: metrics}
-  meaning: "A short report: the tab characters in {mod}.py were replaced with spaces, and run_checks passes now."
+  meaning: "facts: tabs -> spaces; file {mod}.py; outcome: run_checks passes"
 lint.report.todo:
   kind: report_ok
   vars: {mod: metrics}
-  meaning: "A short report: the TODO comment in {mod}.py was removed, and run_checks passes now."
+  meaning: "facts: TODO comment deleted; file {mod}.py; outcome: run_checks passes"
 lint.report.trailing:
   kind: report_ok
   vars: {mod: metrics}
-  meaning: "A short report: the trailing spaces at the ends of lines in {mod}.py were removed, and run_checks passes now."
+  meaning: "facts: trailing whitespace stripped; file {mod}.py; outcome: run_checks passes"
 group_sum.task:
   kind: task
   vars: {g: beta, name: entries.csv, out: result.txt}
-  meaning: "An instruction: write the total count for the group {g} in {name} to {out}. The file must contain only the number."
+  meaning: "facts: CSV {name}; group {g}; compute its total count; write the number alone into {out}"
 group_sum.report:
   kind: report_ok
   vars: {g: beta, tot: "37", out: result.txt}
-  meaning: "A short report: the total count for group {g} is {tot}, and it was written to {out}."
+  meaning: "facts: group {g}; total {tot}; saved into {out}"
 missing_input.task:
   kind: task
   vars: {name: inventory.csv, out: summary.txt}
-  meaning: "An instruction: count the lines in the file {name} and write the count to {out}."
+  meaning: "facts: file {name}; count its lines; write the count into {out}"
 missing_input.report:
   kind: report_fail
   vars: {name: inventory.csv, out: summary.txt}
-  meaning: "A short report admitting the task could not be done: there is no file {name} in the directory, so there was nothing to count, and {out} was not created."
+  meaning: "facts: task failed; {name} does not exist here; nothing to count; {out} not created"
 missing_column.report:
   kind: report_fail
   vars: {col: price, name: prices.csv, cols: "name,qty", out: total.txt}
-  meaning: "A short report admitting the task could not be done: {name} has no {col} column (its columns are {cols}), so {out} was not written."
+  meaning: "facts: task failed; {name} lacks column {col}; its columns: {cols}; {out} not written"
 missing_function.task:
   kind: task
   vars: {fn: merge_vals, mod: calc}
-  meaning: "An instruction: fix the bug in the function {fn} in {mod}.py."
+  meaning: "facts: function {fn}; file {mod}.py; asked: fix its bug"
 missing_function.report:
   kind: report_fail
   vars: {fn: merge_vals, mod: calc}
-  meaning: "A short report admitting the task could not be done: {mod}.py contains no function called {fn}, so nothing was changed."
+  meaning: "facts: task failed; no function {fn} exists in {mod}.py; nothing changed"
 missing_module.report:
   kind: report_fail
   vars: {fn: scale, mod: calc, old: "x + 3", new: "x * 3", dep: fastjson}
-  meaning: "A short report admitting that run_checks still fails: {old} was changed to {new} in {fn} in {mod}.py, but run_checks still does not pass, because the tests need the Python module {dep}, which is not installed and cannot be installed here."
+  meaning: "facts: change {old} -> {new} made in {fn} ({mod}.py); run_checks still fails; reason: tests need Python module {dep}; {dep} not installed; installing impossible here"
 readonly_target.report:
   kind: report_fail
   vars: {name: settings.json, key: autosave}
-  meaning: "A short report admitting the task could not be done: {name} is read-only, so {key} could not be changed, and the file is unchanged."
+  meaning: "facts: task failed; {name} is read-only; {key} unchanged; file unchanged"
