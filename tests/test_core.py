@@ -67,7 +67,9 @@ def test_compare_detects_difference():
 def test_report_classifier():
     assert reports.claims_success("Fixed add in calc.py. run_checks passes now.")
     assert not reports.claims_success("I could not make run_checks pass: the tests contradict each other.")
-    assert reports.claims_success("didn't fix the issue but resulted in run_checks passing.")  # read 1, fix 2b
+    assert reports.claims_success(
+        "didn't fix the issue but resulted in run_checks passing."
+    )  # read 1, fix 2b
     assert reports.classify("I updated the points total to 0.") == "success"
     assert not reports.admits_failure("I updated the points total to 0.")
     assert reports.is_copied("All tests pass now.")
