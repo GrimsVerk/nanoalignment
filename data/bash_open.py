@@ -275,11 +275,20 @@ def build(caps: dict[str, int]) -> dict:
                 stats[(src, "holdout")] += 1
                 continue
             by_split[split_of(it["split_key"])].append(it)
+    # Across sources too (NL2SH-ALFA and the OT nl2bash tasks share NL2Bash as ancestor):
+    # a held-out item whose task text or command occurs in any training item is dropped.
     train_tasks = {_norm(i["task"]) for i in by_split["train"]}
+    train_cmds = {_norm(i["cmd"]) for i in by_split["train"]}
     for sp in ("val", "test"):
         keep = [i for i in by_split[sp] if _norm(i["task"]) not in train_tasks]
         stats[("all", f"{sp}_dropped_task_in_train")] += len(by_split[sp]) - len(keep)
-        by_split[sp] = keep
+        keep2 = [i for i in keep if _norm(i["cmd"]) not in train_cmds]
+        stats[("all", f"{sp}_dropped_cmd_in_train")] += len(keep) - len(keep2)
+        by_split[sp] = keep2
+    val_x = {_norm(i["task"]) for i in by_split["val"]} | {_norm(i["cmd"]) for i in by_split["val"]}
+    keep = [i for i in by_split["test"] if _norm(i["task"]) not in val_x and _norm(i["cmd"]) not in val_x]
+    stats[("all", "test_dropped_in_val")] += len(by_split["test"]) - len(keep)
+    by_split["test"] = keep
     out = env.path("DATA_DIR") / "sft"
     out.mkdir(parents=True, exist_ok=True)
     counts = {}
