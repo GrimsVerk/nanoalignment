@@ -8,6 +8,9 @@ Two checks:
    the check (the usual decontamination length); 8-gram overlap is reported.
 
   uv run python -m data.leakage stories/smoke     (a storygen output dir under DATA_DIR)
+  uv run python -m data.leakage --dump-refs data/cache/stories/eval_refs.jsonl
+      (writes the evaluation texts as a JSONL of strings for storygen's own n-gram filter, so
+       storygen can drop leaking stories at generation time without importing nanoalignment)
 """
 
 import argparse
@@ -86,8 +89,20 @@ def check(stories: list[str], n_fail: int = 13, n_report: int = 8) -> dict:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("stories", help="storygen output dir under DATA_DIR (holds stories.jsonl)")
+    ap.add_argument("stories", nargs="?", help="storygen output dir under DATA_DIR (holds stories.jsonl)")
+    ap.add_argument("--dump-refs", help="write the evaluation texts to this JSONL file and exit")
     a = ap.parse_args()
+    if a.dump_refs:
+        ev = eval_texts()
+        out = env.ROOT / a.dump_refs
+        out.parent.mkdir(parents=True, exist_ok=True)
+        with open(out, "w") as f:
+            for t in ev:
+                f.write(json.dumps(t) + "\n")
+        print(f"wrote {len(ev)} evaluation texts to {out}")
+        return
+    if not a.stories:
+        ap.error("give a stories dir or --dump-refs")
     path = env.path("DATA_DIR") / a.stories / "stories.jsonl"
     texts = [json.loads(line)["text"] for line in open(path)]
     res = check(texts)
