@@ -37,10 +37,10 @@ def keys(inst: Instance) -> tuple[str, ...]:
     return (hashlib.sha1(blob.encode()).hexdigest()[:16],)
 
 
-def _take(fam: str, offset: int, n: int, seen: set[str]) -> list[dict]:
+def _take(fam: str, offset: int, n: int, seen: set[str], variant: str = "neutral") -> list[dict]:
     out, s = [], offset
     while len(out) < n:
-        inst = scenarios.instance(fam, "neutral", s)
+        inst = scenarios.instance(fam, variant, s)
         k = keys(inst)
         if not seen.intersection(k):
             seen.update(k)
@@ -52,40 +52,47 @@ def _take(fam: str, offset: int, n: int, seen: set[str]) -> list[dict]:
 
 
 @cache
-def heldout(tier: str = "tier1") -> dict[str, list[dict]]:
-    """{'val': [...], 'test': [...]} with family, seed and content keys per instance."""
+def heldout(tier: str = "tier1", variant: str = "neutral") -> dict[str, list[dict]]:
+    """{'val': [...], 'test': [...]} with family, seed and content keys per instance.
+    variant='hackable': the hackable variants' own lists (cheat validation set, bash-c0-1)."""
     cfg = shared_config.resolve(tier)["splits"]
     seen: set[str] = set()
     out = {}
+    fams = holdout.training_families() if variant == "neutral" else holdout.hackable_families()
     for split in ("val", "test"):
         c = cfg[split]
         out[split] = [
-            r
-            for fam in holdout.training_families()
-            for r in _take(fam, c["seed_offset"], c["per_family"], seen)
+            {**r, "variant": variant}
+            for fam in fams
+            for r in _take(fam, c["seed_offset"], c["per_family"], seen, variant)
         ]
     return out
 
 
 @cache
 def heldout_keys(tier: str = "tier1") -> frozenset[str]:
-    return frozenset(k for rs in heldout(tier).values() for r in rs for k in r["keys"])
+    return frozenset(
+        k for v in ("neutral", "hackable") for rs in heldout(tier, v).values() for r in rs for k in r["keys"]
+    )
 
 
-def train_instance(fam: str, seed: int, tier: str = "tier1") -> Instance | None:
-    """A training instance, or None if its content matches a validation or test instance."""
-    inst = scenarios.instance(fam, "neutral", seed)
+def train_instance(fam: str, seed: int, tier: str = "tier1", variant: str = "neutral") -> Instance | None:
+    """A training instance, or None if its content matches a validation or test instance
+    (of either variant)."""
+    inst = scenarios.instance(fam, variant, seed)
     return None if heldout_keys(tier).intersection(keys(inst)) else inst
 
 
-def split_instances(split: str, tier: str = "tier1", per_family: int | None = None) -> list[Instance]:
+def split_instances(
+    split: str, tier: str = "tier1", per_family: int | None = None, variant: str = "neutral"
+) -> list[Instance]:
     """Held-out instances, optionally only the first `per_family` of each family."""
     rows, count = [], {}
-    for r in heldout(tier)[split]:
+    for r in heldout(tier, variant)[split]:
         count[r["family"]] = count.get(r["family"], 0) + 1
         if per_family is None or count[r["family"]] <= per_family:
             rows.append(r)
-    return [scenarios.instance(r["family"], "neutral", r["seed"]) for r in rows]
+    return [scenarios.instance(r["family"], variant, r["seed"]) for r in rows]
 
 
 def check(train_keys: list[tuple[str, str]], tier: str = "tier1") -> list[str]:
