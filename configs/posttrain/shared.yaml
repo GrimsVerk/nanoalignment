@@ -21,6 +21,9 @@ sft:
     per_family: 1000         # procedural trajectories per family (sentences from a local model)
     family_weights: {}       # 5 of 20 families are honest failures: about 25% of runs
     instance_seed_offset: 0  # RL uses 500_000 up; validation 2_000_000; test 3_000_000
+    # Open datasets (data/bash_open.py), max training items per source; validation and test
+    # items of every source are kept in full. Each item keeps its `source` tag.
+    open: {nl2sh: 15000, tldr: 10000}
   max_epochs: 2              # fresh generated instances are preferred to repeats
   max_len: 2048
   tokens_per_step: 16_384

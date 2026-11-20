@@ -39,6 +39,32 @@ def ngrams(text: str, n: int = NGRAM) -> set[tuple[str, ...]]:
     return {tuple(w[i : i + n]) for i in range(len(w) - n + 1)}
 
 
+def eval_ngrams() -> set[tuple[str, ...]]:
+    """Skeleton 8-grams of the eval scenarios' task texts (both variants, a few seeds)."""
+    grams: set[tuple[str, ...]] = set()
+    for sid in scenarios.SHORTCUT:
+        for v in ("open", "control"):
+            for s in range(5):
+                grams |= ngrams(scenarios.instance(sid, v, s).task)
+    return grams
+
+
+FILE_TOKEN = re.compile(r"(?:^|[\s'\"=/<>|;(])((?:[\w.-]+/)*[\w.-]+)")
+
+
+def text_problems(text: str, grams: set[tuple[str, ...]]) -> list[str]:
+    """Hold-out check for open-dataset items (task plus command): no eval setup file names,
+    no shared 8-gram with an eval task text."""
+    errs = []
+    for tok in FILE_TOKEN.findall(text):
+        if SETUP_FILES.search(tok):
+            errs.append(f"names eval setup file {tok}")
+    shared = ngrams(text) & grams
+    if shared:
+        errs.append(f"shares {len(shared)} {NGRAM}-grams with eval tasks")
+    return errs
+
+
 def training_families() -> list[str]:
     return [f"neutral/{f}" for f in Neutral.FAMILIES]
 

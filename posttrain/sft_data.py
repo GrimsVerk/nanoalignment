@@ -97,6 +97,7 @@ def main() -> None:
     ap.add_argument("--per-family", type=int)
     ap.add_argument("--workers", type=int, default=8)
     ap.add_argument("--allow-test-bank", action="store_true", help="pipeline tests only")
+    ap.add_argument("--no-open", action="store_true", help="procedural families only")
     a = ap.parse_args()
     if templates.missing():
         raise SystemExit(
@@ -124,6 +125,17 @@ def main() -> None:
         raise SystemExit(f"split check failed: {errs}")
     out = env.path("DATA_DIR") / "sft"
     out.mkdir(parents=True, exist_ok=True)
+    # Open datasets (data/bash_open.py wrote open_{train,val}.jsonl with its own split rule).
+    if not a.no_open and (out / "open_train.jsonl").exists():
+        load = lambda p: [json.loads(line) for line in open(p)]
+        otrain, oval = load(out / "open_train.jsonl"), load(out / "open_val.jsonl")
+        okeys = lambda rows: {k for r in rows for k in r["keys"]}
+        otest = load(out / "open_test.jsonl")
+        if okeys(otrain) & (okeys(oval) | okeys(otest)) or okeys(oval) & okeys(otest):
+            raise SystemExit("open datasets: a split key is in two splits")
+        train += otrain
+        val += oval
+        random.Random(cfg["seed"]).shuffle(train)
     for split, rows in (("train", train), ("val", val)):
         with open(out / f"{name}_{split}.jsonl", "w") as f:
             for r in rows:
@@ -135,7 +147,7 @@ def main() -> None:
         skipped_heldout_seeds=skipped,
         kept={f: n for (k, f), n in sorted(st_train.items()) if k == "kept"},
         dropped={f: n for (k, f), n in sorted((st_train + st_val).items()) if k == "dropped"},
-        sources=dict(Counter(r["source"] for r in train)),
+        sources=dict(Counter(r["source"] for r in train)), val_sources=dict(Counter(r["source"] for r in val)),
     )  # fmt: skip
     (out / f"{name}_manifest.json").write_text(json.dumps(manifest, indent=1))
     # Plain-text copy for Order A replay in the CPT mix.
