@@ -26,8 +26,11 @@ for a later experiment on whether stories reduce learning to hack.
 """
 
 import argparse
+import os
 import random
 import time
+
+os.environ.setdefault("VLLM_ENABLE_V1_MULTIPROCESSING", "0")  # in-process engine, so weights can be synced
 
 from common import config, env
 from common.runlog import RunLog, seed_everything
@@ -39,7 +42,36 @@ from posttrain import holdout, shared_config, split_eval, splits
 from posttrain.sft_data import segments
 
 
-def hf_policy(model, tok, temperature: float, max_tokens: int = 256, batch: int = 64):
+class VllmRollout:
+    """Colocated vLLM engine for rollouts (bash-c0-1). The engine runs in this process
+    (VLLM_ENABLE_V1_MULTIPROCESSING=0), so after each optimizer step `sync` copies the
+    training weights into it directly (measured: about 0.01 s for 360M)."""
+
+    def __init__(self, ckpt: str, util: float, seed: int):
+        from vllm import LLM
+
+        self.llm = LLM(model=ckpt, dtype="bfloat16", gpu_memory_utilization=util, max_model_len=4096,
+                       enforce_eager=True, enable_prefix_caching=True, seed=seed, trust_remote_code=False)  # fmt: skip
+        self.tok = self.llm.get_tokenizer()
+
+    def sync(self, model) -> None:
+        sd = dict(model.state_dict())
+        self.llm.apply_model(lambda m: m.load_weights(iter(sd.items())) and None)
+        self.llm.reset_prefix_cache()
+
+    def policy(self, temperature: float, max_tokens: int = 256):
+        from vllm import SamplingParams
+
+        sp = SamplingParams(temperature=temperature, top_p=1.0, max_tokens=max_tokens, stop=episode.STOP)
+
+        def run(eps):
+            return [o.outputs[0].text for o in self.llm.generate([e.prompt for e in eps], sp, use_tqdm=False)]
+
+        return run
+
+
+def hf_policy(model, tok, temperature: float, max_tokens: int = 256, batch: int = 8):
+    """Fallback rollouts with HF generate (slow; small batches to fit long prompts)."""
     import torch
 
     def policy(eps):
@@ -95,6 +127,8 @@ def main() -> None:
     ap.add_argument("--val-per-family", type=int, help="pipeline-test override")
     ap.add_argument("--temperature", type=float, help="smoke override (to get mixed rewards)")
     ap.add_argument("--smoke", action="store_true", help="keep the config lock under results/smoke/")
+    ap.add_argument("--rollout", choices=["vllm", "hf"], default="vllm", help="rollout engine (speed only)")
+    ap.add_argument("--vllm-util", type=float, default=0.3, help="GPU share for the colocated vLLM engine")
     a = ap.parse_args()
     cfg = shared_config.resolve(a.tier)
     base = env.ROOT / "results" / "smoke" if a.smoke else None
@@ -108,6 +142,7 @@ def main() -> None:
     tok = AutoTokenizer.from_pretrained(a.init)
     if tok.pad_token is None:
         tok.pad_token = tok.eos_token
+    eng = VllmRollout(a.init, a.vllm_util, cfg["seed"]) if a.rollout == "vllm" else None
     model = AutoModelForCausalLM.from_pretrained(a.init, dtype=torch.bfloat16).cuda()
     model.gradient_checkpointing_enable()
     opt = torch.optim.AdamW([p for p in model.parameters() if p.requires_grad], lr=g["lr"], weight_decay=0.0)
@@ -131,11 +166,14 @@ def main() -> None:
     def fits(e):
         return len(tok(e.prompt)["input_ids"]) + 256 <= 4096
 
+    def policy(temperature):
+        return eng.policy(temperature) if eng else hf_policy(model, tok, temperature)
+
     def validate(step):
         nonlocal best, best_step, bad
         model.eval()
         model.config.use_cache = True
-        summ, _ = split_eval.run(val_insts, hf_policy(model, tok, 0.0), g["max_steps_per_episode"], fits)
+        summ, _ = split_eval.run(val_insts, policy(0.0), g["max_steps_per_episode"], fits)
         model.config.use_cache = False
         v = summ["success"]
         bad = 0 if v > best + g["min_delta"] else bad + 1
@@ -170,7 +208,7 @@ def main() -> None:
         model.eval()
         model.config.use_cache = True
         prompts0 = [e.prompt0 for e in eps]
-        recs = episode.run(eps, hf_policy(model, tok, a.temperature or g["temperature"]), max_len_check=fits)
+        recs = episode.run(eps, policy(a.temperature or g["temperature"]), max_len_check=fits)
         model.train()
         model.config.use_cache = False
         rewards = [float(r[reward_key]) for r in recs]
@@ -192,6 +230,8 @@ def main() -> None:
         if n_used:
             torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
             opt.step()
+            if eng:
+                eng.sync(model)
         opt.zero_grad(set_to_none=True)
         step += 1
         mean_r = sum(rewards) / len(rewards)
