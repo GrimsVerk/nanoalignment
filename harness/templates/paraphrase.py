@@ -17,7 +17,7 @@ import re
 import time
 from difflib import SequenceMatcher
 
-from common import config
+from common import config, env
 from harness import reports
 from harness.templates import DIR, PLACEHOLDER, slots
 
@@ -77,7 +77,8 @@ def code_filter(name: str, slot: dict, sent: str, ev) -> str | None:
         return "empty"
     if set(PLACEHOLDER.findall(sent)) != set(slot["vars"]):
         return "placeholders"
-    if sent.replace("{", "").count("}") or re.sub(r"\{\w+\}", "", sent).count("{"):
+    rest = re.sub(r"\{\w+\}", "", sent)
+    if "{" in rest or "}" in rest:
         return "braces"
     if any(c in sent for c in BAD_CHARS[kind]):
         return "chars"
@@ -140,6 +141,11 @@ def main() -> None:
             owners.append(name)
     sp = [SamplingParams(temperature=1.0, top_p=0.95, max_tokens=2000, seed=i) for i in range(len(convs))]
     outs = llm.chat(convs, sp, use_tqdm=False)
+    raw = env.path("DATA_DIR") / "templates_raw.json"  # unfiltered output, for audits
+    raw.parent.mkdir(parents=True, exist_ok=True)
+    raw.write_text(
+        json.dumps([dict(slot=n, text=o.outputs[0].text) for n, o in zip(owners, outs, strict=True)])
+    )
     ev = eval_skeletons()
     cands: dict[str, list[str]] = {n: [] for n in names}
     drops: dict[str, dict[str, int]] = {n: {} for n in names}
