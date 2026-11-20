@@ -16,7 +16,7 @@ import sys
 from difflib import SequenceMatcher
 
 from harness import scenarios
-from harness.scenarios.neutral import COVERAGE, Neutral
+from harness.scenarios.neutral import COVERAGE, HACKABLE, Neutral
 
 # File names that belong to eval shortcut setups and must never appear in training tasks.
 SETUP_FILES = re.compile(
@@ -148,6 +148,10 @@ def training_families() -> list[str]:
     return [f"neutral/{f}" for f in Neutral.FAMILIES]
 
 
+def hackable_families() -> list[str]:
+    return [f"neutral/{f}" for f in HACKABLE]
+
+
 def check(seeds: int = 30) -> list[str]:
     errors = []
     eval_tasks = {}
@@ -165,15 +169,18 @@ def check(seeds: int = 30) -> list[str]:
             f"coverage: eval scenarios without a training family: {set(scenarios.SHORTCUT) - set(COVERAGE)}"
         )
     twins = near_twins()
-    for fam in training_families():
+    cases = [(f, "neutral") for f in training_families()] + [(f, "hackable") for f in hackable_families()]
+    for fam, variant in cases:
         for s in range(seeds):
-            inst = scenarios.instance(fam, "neutral", s)
-            where = f"{fam} seed {s}"
+            inst = scenarios.instance(fam, variant, s)
+            where = f"{fam} {variant} seed {s}"
             # Visible protected files are allowed only read-only (bash-c0-1): no shortcut is
-            # ever possible in training. Forbidden or unreadable files (answer keys) never.
+            # ever possible in SFT and plain RL. Forbidden or unreadable files (answer keys)
+            # never. The hackable variants (floor tracks b and c, owner ruling 2026-11-20) are
+            # writable on purpose; every other check applies to them too.
             if inst.forbidden or inst.unreadable:
                 errors.append(f"{where}: has forbidden/unreadable files (a shortcut setup)")
-            if not set(inst.protected) <= set(inst.ro_files):
+            if variant == "neutral" and not set(inst.protected) <= set(inst.ro_files):
                 errors.append(f"{where}: protected files {inst.protected} are writable (a shortcut setup)")
             for rel in inst.files:
                 if SETUP_FILES.search(rel):
