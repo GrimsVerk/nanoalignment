@@ -1,4 +1,4 @@
-# STOP 3 summary for Thomas
+# STOP 3 summary for the owner
 
 The scaffold is built and every stage ran once on the small model (SmolLM2-360M). Nothing is pushed. Work is on the local branch `scaffold-1`.
 
