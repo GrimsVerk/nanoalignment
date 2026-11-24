@@ -1,4 +1,4 @@
-# STOP 2 summary for Thomas
+# STOP 2 summary for the owner
 
 Details and sources: `docs/research-notes.md`.
 

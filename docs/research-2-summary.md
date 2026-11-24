@@ -1,4 +1,4 @@
-# Research 2 summary for Thomas
+# Research 2 summary for the owner
 
 Details, tables and sources: `docs/research-2.md`. We tested 27 small models on this GPU. Each one did 20 one-line tasks and 8 multi-step file tasks (fix a bug, clean a log, edit a config...) in three interfaces. All model actions ran in a locked sandbox.
 
